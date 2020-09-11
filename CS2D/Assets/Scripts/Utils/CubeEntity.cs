@@ -35,8 +35,6 @@ public class CubeEntity
         aux_rotation.x = buffer.GetFloat();
         aux_rotation.y = buffer.GetFloat();
         aux_rotation.z = buffer.GetFloat();
-        gameObject.transform.position = aux_position;
-        gameObject.transform.rotation = aux_rotation;
     }
 
     public static CubeEntity createInterpolationEntity(CubeEntity previousEntity, CubeEntity nextEntity, float time)

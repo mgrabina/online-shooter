@@ -27,10 +27,10 @@ public class ClientMessenger : MonoBehaviour
     
     private void Start()
     {
-        registrationChannel = new Channel(null, Constants.registrationChannelPort, Constants.registrationChannelPort);
-        visualizationChannel = new Channel(Constants.serverIP, Constants.visualizationChannelPort, Constants.visualizationChannelPort);
-        clientInputChannel = new Channel(Constants.serverIP, Constants.clientInputChannelPort, Constants.clientInputChannelPort);
-        serverACKChannel = new Channel(Constants.serverIP, Constants.serverACKChannelPort, Constants.serverACKChannelPort);
+        registrationChannel = new Channel(null, Constants.client_registrationChannelPort, Constants.server_registrationChannelPort);
+        visualizationChannel = new Channel(null, Constants.client_visualizationChannelPort, Constants.server_visualizationChannelPort);
+        clientInputChannel = new Channel(null, Constants.client_clientInputChannelPort, Constants.server_clientInputChannelPort);
+        serverACKChannel = new Channel(null, Constants.client_serverACKChannelPort, Constants.server_serverACKChannelPort);
 
         clientCubeEntity = new CubeEntity(gameObject);
 
@@ -53,7 +53,7 @@ public class ClientMessenger : MonoBehaviour
         var registerPaket = Packet.Obtain();
         registerPaket.buffer.PutInt(id);
         registerPaket.buffer.Flush();
-        var remoteEp = new IPEndPoint(IPAddress.Parse(Constants.serverIP), Constants.registrationChannelPort);
+        var remoteEp = new IPEndPoint(IPAddress.Parse(Constants.serverIP), Constants.server_registrationChannelPort);
         registrationChannel.Send(registerPaket, remoteEp);
         registerPaket.Free();
     }
@@ -109,7 +109,7 @@ public class ClientMessenger : MonoBehaviour
             }
 
             inputPacket.buffer.Flush();
-            var remoteEp = new IPEndPoint(IPAddress.Parse(Constants.serverIP), Constants.clientInputChannelPort);
+            var remoteEp = new IPEndPoint(IPAddress.Parse(Constants.serverIP), Constants.server_clientInputChannelPort);
             clientInputChannel.Send(inputPacket, remoteEp);
             inputPacket.Free();
             accumulatedTime_c2 -= Constants.sendRate;
@@ -164,7 +164,7 @@ public class ClientMessenger : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.C))
         {
-            clientInputChannel = new Channel(Constants.clientInputChannelPort);
+            clientInputChannel = new Channel(Constants.server_clientInputChannelPort);
         }
     }
     

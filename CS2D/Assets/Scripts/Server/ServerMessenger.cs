@@ -26,10 +26,10 @@ public class ServerMessenger : MonoBehaviour
     
     private void Start()
     {
-        registrationChannel = new Channel(null, Constants.registrationChannelPort, Constants.registrationChannelPort);
-        visualizationChannel = new Channel(null, Constants.visualizationChannelPort, Constants.visualizationChannelPort);
-        clientInputChannel = new Channel(null, Constants.clientInputChannelPort, Constants.clientInputChannelPort);
-        serverACKChannel = new Channel(null, Constants.serverACKChannelPort, Constants.serverACKChannelPort);
+        registrationChannel = new Channel(null, Constants.server_registrationChannelPort, Constants.client_registrationChannelPort);
+        visualizationChannel = new Channel(null, Constants.server_visualizationChannelPort, Constants.client_visualizationChannelPort);
+        clientInputChannel = new Channel(null, Constants.server_clientInputChannelPort, Constants.client_clientInputChannelPort);
+        serverACKChannel = new Channel(null, Constants.server_serverACKChannelPort, Constants.client_serverACKChannelPort);
         serverCubeEntity = new CubeEntity(gameObject);
         serverRigidBody = gameObject.GetComponent<Rigidbody>();
     }
@@ -62,7 +62,10 @@ public class ServerMessenger : MonoBehaviour
         {
             int id = inputPacket.buffer.GetInt();
             IPEndPoint endPoint = inputPacket.fromEndPoint;
-            players.Add(new PlayerInfo(id, endPoint));
+            if (!players.Contains(new PlayerInfo(id, endPoint)))
+            {
+                players.Add(new PlayerInfo(id, endPoint));
+            }
         }
     }
     
@@ -78,7 +81,9 @@ public class ServerMessenger : MonoBehaviour
                 snapshot.Serialize(packet.buffer);
                 packet.buffer.Flush();
 
-                visualizationChannel.Send(packet, player.EndPoint);
+                var remoteEp = new IPEndPoint(player.EndPoint.Address, Constants.client_visualizationChannelPort);
+                visualizationChannel.Send(packet, remoteEp);
+                
                 packet.Free();
                 accumulatedTime_c1 -= Constants.sendRate;
             }
@@ -120,7 +125,9 @@ public class ServerMessenger : MonoBehaviour
         var ackPacket = Packet.Obtain();
         ackPacket.buffer.PutInt(number);
         ackPacket.buffer.Flush();
-        serverACKChannel.Send(ackPacket, pi.EndPoint);
+        
+        var remoteEp = new IPEndPoint(pi.EndPoint.Address, Constants.client_serverACKChannelPort);
+        serverACKChannel.Send(ackPacket, remoteEp);
         ackPacket.Free();   
     }
     

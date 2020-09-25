@@ -1,34 +1,46 @@
-using lib.Network;
+using System.Collections.Generic;
+using custom.Network;
 
 namespace custom.Utils
 {
     public class Snapshot
     {
-        private CubeEntity entity;
+        private List<CubeEntity> entities;
         private int packetNumber;
 
-        public Snapshot(int packetNumber, CubeEntity entity)
+        public Snapshot(int packetNumber, List<CubeEntity> entities)
         {
-            this.entity = entity;
+            this.entities = entities;
             this.packetNumber = packetNumber;
         }
 
         public void Serialize(BitBuffer buffer)
         {
             buffer.PutInt(packetNumber);
-            entity.Serialize(buffer);
+            entities.ForEach(c => c.Serialize(buffer));
         }
 
         public void Deserialize(BitBuffer buffer)
         {
             packetNumber = buffer.GetInt();
-            entity.Deserialize(buffer);
+            List<CubeEntity> news = new List<CubeEntity>();
+            entities.ForEach(c =>
+            {
+                CubeEntity aux = new CubeEntity(c.GameObject, c.Id);
+                aux.Deserialize(buffer);
+                news.Add(aux);
+            });
+            entities = news;
         }
 
         public static Snapshot createInterpolationSnapshot(Snapshot previous, Snapshot next, float time)
         {
-            var newEntity = CubeEntity.createInterpolationEntity(previous.entity, next.entity, time);
-            return new Snapshot(-1, newEntity);
+            List<CubeEntity> cubeEntities = new List<CubeEntity>();
+            for (int i = 0; i < previous.entities.Count; i++)
+            {
+                cubeEntities.Add(CubeEntity.createInterpolationEntity(previous.entities[i], next.entities[i], time));
+            }
+            return new Snapshot(-1, cubeEntities);
         }
 
         public int GetPacketNumber()
@@ -38,7 +50,7 @@ namespace custom.Utils
 
         public void applyChanges()
         {    
-            this.entity.applyChanges();
+            this.entities.ForEach(c => c.applyChanges());;
         }
     }
 }

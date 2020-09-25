@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Net;
+using custom.Network;
 using custom.Utils;
-using lib.Network;
 using UnityEngine;
+using Channel = lib.Network.Channel;
+using Packet = lib.Network.Packet;
 
 namespace custom.Client
 {
@@ -10,12 +12,10 @@ namespace custom.Client
     {
     
         // Networking
-        private Channel registrationChannel;
-        private Channel visualizationChannel;
-        private Channel clientInputChannel;
-        private Channel serverACKChannel;
-    
-        private CubeEntity clientCubeEntity;
+        
+        [SerializeField] private GameObject clientCubePrefab;
+        private List<CubeEntity> clientCubes;
+        private HashSet<int> playerIds = new HashSet<int>();
     
         private List<Commands> commands = new List<Commands>();
         private List<Snapshot> interpolationBuffer = new List<Snapshot>();
@@ -25,52 +25,78 @@ namespace custom.Client
         private bool clientResponding = false;
         private int packetNumber = 0;
 
+        private MessageBuilder mb;
+        
         public int id;
+
+        private bool registered = false;
     
         private void Start()
         {
-            registrationChannel = new Channel(null, Constants.client_registrationChannelPort, Constants.server_registrationChannelPort);
-            visualizationChannel = new Channel(null, Constants.client_visualizationChannelPort, Constants.server_visualizationChannelPort);
-            clientInputChannel = new Channel(null, Constants.client_clientInputChannelPort, Constants.server_clientInputChannelPort);
-            serverACKChannel = new Channel(null, Constants.client_serverACKChannelPort, Constants.server_serverACKChannelPort);
-
-            clientCubeEntity = new CubeEntity(gameObject);
-
-            register();
+            id = generate_id();
+            mb = new MessageBuilder(id, Constants.clients_base_port + id*10, Constants.server_base_port, Constants.serverIP);
+            clientCubes = new List<CubeEntity>();
+            if (!registered)
+            {
+                register();
+            }
         }
 
         private void Update()
         {
             accumulatedTime_c2 += Time.deltaTime;
+
+            checkPlayersJoined();
+
+            if (registered)
+            {
+                recieveCommandsACK();
         
-            recieveCommandsACK();
+                sendCommands();
         
-            sendCommands();
-        
-            updateServerVisualization();
+                updateServerVisualization();
+            }
         }
 
         private void register()
         {
-            var registerPaket = Packet.Obtain();
-            registerPaket.buffer.PutInt(id);
-            registerPaket.buffer.Flush();
-            var remoteEp = new IPEndPoint(IPAddress.Parse(Constants.serverIP), Constants.server_registrationChannelPort);
-            registrationChannel.Send(registerPaket, remoteEp);
-            registerPaket.Free();
+            mb.generateJoinGameMessage(id).Send();
+        }
+
+        private void checkPlayersJoined()
+        {
+            Message message;
+            while ((message = mb.getPlayerJoinedChannelMessage()) != null)
+            {
+                if (message.GetType == Message.Type.PLAYER_JOINED)
+                {
+                    int idJoined = ((PlayerJoinedMessage) message).IdJoined();
+                    if (idJoined == this.id)
+                    {
+                        registered = true;
+                    }
+
+                    if (playerIds.Contains(idJoined))
+                    {
+                        continue;
+                    }
+                    playerIds.Add(idJoined);
+                    var clientCube = Instantiate(clientCubePrefab, new Vector3(0, 0.5f, 0), new Quaternion());
+                    clientCubes.Add(new CubeEntity(clientCube, idJoined));
+                    
+                }
+            }
         }
 
         private void updateServerVisualization()
         {
-            var visualization_packet = visualizationChannel.GetPacket();
-            if (visualization_packet != null)
+            Message message;
+            if ((message = mb.getServerBroadcastChannelMessage()) != null)
             {
                 // Recieved
-                var snapshot = new Snapshot(-1, clientCubeEntity);
-                var buffer = visualization_packet.buffer;
-
-                //Deserialization
-                clientCubeEntity.Deserialize(buffer);
+                var snapshot = new Snapshot(-1, clientCubes);
+                var buffer = message.Packet.buffer;
+                snapshot.Deserialize(buffer);
 
                 int interpolationBufferSize = interpolationBuffer.Count;
                 if (interpolationBufferSize == 0
@@ -101,29 +127,18 @@ namespace custom.Client
         {
             if (accumulatedTime_c2 >= Constants.sendRate)
             {
-                ReadInput();
-                var inputPacket = Packet.Obtain();
-                inputPacket.buffer.PutInt(id);
-                inputPacket.buffer.PutInt(commands.Count);
-                foreach (var command in commands)
-                {
-                    command.Serialize((inputPacket.buffer));
-                }
-
-                inputPacket.buffer.Flush();
-                var remoteEp = new IPEndPoint(IPAddress.Parse(Constants.serverIP), Constants.server_clientInputChannelPort);
-                clientInputChannel.Send(inputPacket, remoteEp);
-                inputPacket.Free();
+                ReadInput();             
+                mb.generateClientUpdateMessage().setArguments(commands).Send();
                 accumulatedTime_c2 -= Constants.sendRate;
             }
         }
 
         private void recieveCommandsACK()
         {
-            Packet ack_packet;
-            while ((ack_packet = serverACKChannel.GetPacket()) != null)
+            Message message;
+            while ((message = mb.getServerACKChannelMessage()) != null)
             {
-                var toDelete = ack_packet.buffer.GetInt();
+                var toDelete = ((ServerACKMessage) message).getNumber();
                 while (commands.Count != 0)
                 {
                     if (commands[0].number <= toDelete || commands[0].timestamp < Time.time)
@@ -158,17 +173,23 @@ namespace custom.Client
             var command = new Commands(packetNumber++, 
                 Input.GetKeyDown(KeyCode.UpArrow), 
                 Input.GetKeyDown(KeyCode.DownArrow),
+                Input.GetKeyDown(KeyCode.LeftArrow),
+                Input.GetKeyDown(KeyCode.RightArrow),
                 Input.GetKeyDown(KeyCode.Space), timeout);
             commands.Add(command);
-            if (Input.GetKeyDown(KeyCode.D))
-            {
-                clientInputChannel.Disconnect();
-            }
-            if (Input.GetKeyDown(KeyCode.C))
-            {
-                clientInputChannel = new Channel(Constants.server_clientInputChannelPort);
-            }
+            // if (Input.GetKeyDown(KeyCode.D))
+            // {
+            //     clientInputChannel.Disconnect();
+            // }
+            // if (Input.GetKeyDown(KeyCode.C))
+            // {
+            //     clientInputChannel = new Channel(Constants.server_clientInputChannelPort);
+            // }
         }
     
+        private static int generate_id()
+        {
+            return Random.Range(0, 100);
+        }
     }
 }

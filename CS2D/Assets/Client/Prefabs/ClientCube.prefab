@@ -11,10 +11,9 @@ GameObject:
   - component: {fileID: 82213771359674268}
   - component: {fileID: 82213771359674270}
   - component: {fileID: 82213771359674271}
-  - component: {fileID: 1804424181}
   - component: {fileID: 3375908508352804987}
   - component: {fileID: -5351892798127687383}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ClientCube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -60,7 +59,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c20ce5db3ccab4fec83e44f4863da0f7, type: 2}
+  - {fileID: 2100000, guid: 80a7f646af1e54f128628e66c199d2fc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -81,19 +80,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &1804424181
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 82213771359674269}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97d6205867ab43298d285cfff4ea2943, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  id: 0
 --- !u!54 &3375908508352804987
 Rigidbody:
   m_ObjectHideFlags: 0

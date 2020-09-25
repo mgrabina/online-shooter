@@ -1,51 +1,41 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using custom.Client;
+using custom.Network;
 using custom.Utils;
-using lib.Network;
+using UnityEditor;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace custom.Server
 {
     public class ServerMessenger : MonoBehaviour
     {
-    
-        // Networking
-        private Channel registrationChannel;
-        private Channel visualizationChannel;
-        private Channel clientInputChannel;
-        private Channel serverACKChannel;
-
-    
-        private CubeEntity serverCubeEntity;
-        private Rigidbody serverRigidBody;
-
+        private HashSet<PlayerInfo> players = new HashSet<PlayerInfo>();
+        private List<CubeEntity> serverCubes;
+        
+        
         private float accumulatedTime_c1 = 0f;
         private int packetNumber = 0;
 
         private bool online = true;
+        
+        private MessageBuilder mb;
+        public GameObject serverGameObject;
 
-        private HashSet<PlayerInfo> players = new HashSet<PlayerInfo>();
-    
+        
         private void Start()
         {
-            registrationChannel = new Channel(null, Constants.server_registrationChannelPort, Constants.client_registrationChannelPort);
-            visualizationChannel = new Channel(null, Constants.server_visualizationChannelPort, Constants.client_visualizationChannelPort);
-            clientInputChannel = new Channel(null, Constants.server_clientInputChannelPort, Constants.client_clientInputChannelPort);
-            serverACKChannel = new Channel(null, Constants.server_serverACKChannelPort, Constants.client_serverACKChannelPort);
-            serverCubeEntity = new CubeEntity(gameObject);
-            serverRigidBody = gameObject.GetComponent<Rigidbody>();
+            mb = new MessageBuilder(-1, Constants.server_base_port, Constants.clients_base_port,null);
+            serverCubes = new List<CubeEntity>();
+
         }
 
         private void Update()
         {
             accumulatedTime_c1 += Time.deltaTime;
-    
-            //apply input
-            if (Input.GetKeyDown(KeyCode.Space)) {
-                serverRigidBody.AddForceAtPosition(Vector3.up * 5, Vector3.zero, ForceMode.Impulse);
-            }
-        
+            
             if (Input.GetKeyDown(KeyCode.D)) {
                 online = !online;
             }
@@ -53,41 +43,43 @@ namespace custom.Server
             if (online)
             {
                 ListenForNewConnections();
-                SendNewPosition();
+                SendUpdates();
                 recieveClientCommands();
             }
         }
 
         public void ListenForNewConnections()
         {
-            Packet inputPacket;
-            while ((inputPacket = registrationChannel.GetPacket()) != null)
+            Message newMessage;
+            while ((newMessage = mb.getRegistrationChannelMessage()) != null)
             {
-                int id = inputPacket.buffer.GetInt();
-                IPEndPoint endPoint = inputPacket.fromEndPoint;
+                int id = newMessage.GetId;
+                IPEndPoint endPoint = newMessage.Packet.fromEndPoint;
                 if (!players.Contains(new PlayerInfo(id, endPoint)))
                 {
                     players.Add(new PlayerInfo(id, endPoint));
+                    var serverCube = Instantiate(serverGameObject, new Vector3(Random.Range(-4, 4), 1, Random.Range(-4,4)), Quaternion.identity);
+                    serverCubes.Add( new CubeEntity(serverCube, id) );
+                    SendPlayerJoined(id);
                 }
             }
         }
+
+        public void SendPlayerJoined(int id)
+        {
+            foreach (var player in players)
+            {
+                mb.generatePlayerJoinedMessage(player).setArguments(id).Send();
+            }
+        }
     
-        public void SendNewPosition()
+        public void SendUpdates()
         {
             if (this.accumulatedTime_c1 >= Constants.sendRate)
             {
                 foreach (var player in players)
                 {
-                    // Serialize
-                    var packet = Packet.Obtain();
-                    var snapshot = new Snapshot(this.packetNumber++, this.serverCubeEntity);
-                    snapshot.Serialize(packet.buffer);
-                    packet.buffer.Flush();
-
-                    var remoteEp = new IPEndPoint(player.EndPoint.Address, Constants.client_visualizationChannelPort);
-                    visualizationChannel.Send(packet, remoteEp);
-                
-                    packet.Free();
+                    mb.generateServerUpdateMessage(player).setArguments(new Snapshot(this.packetNumber++, serverCubes)).Send();
                     accumulatedTime_c1 -= Constants.sendRate;
                 }
             }   
@@ -95,26 +87,37 @@ namespace custom.Server
 
         public void recieveClientCommands()
         {
-            Packet inputPacket;
-            while ((inputPacket = clientInputChannel.GetPacket()) != null)
+            Message recievedMessage;
+            while ((recievedMessage = mb.getClientInputChannelMessage()) != null)
             {
-                int number = 0, id = inputPacket.buffer.GetInt(), limit = inputPacket.buffer.GetInt();
-                for (int i = 0; i < limit; i++)
+                if (recievedMessage.GetType == Message.Type.CLIENT_UPDATE)
                 {
-                    var commands = new Commands();
-                    commands.Deserialize(inputPacket.buffer);
-                    if (commands.space)
+                    int n = -1;
+                    foreach (Commands commands in ((ClientUpdateMessage)recievedMessage).Commands)
                     {
-                        serverRigidBody.AddForceAtPosition(Vector3.up * 2, Vector3.zero, ForceMode.Impulse);
-                    }
-                    if (commands.up)
-                    {
-                        serverRigidBody.AddForceAtPosition(Vector3.up * 10, Vector3.zero, ForceMode.Impulse);
-                    }
+                        
+                        Vector3 force = Vector3.zero;
+                        force += commands.space ? Vector3.up * 5 : Vector3.zero;
+                        force += commands.up ? Vector3.forward * 2 : Vector3.zero;
+                        force += commands.down ? Vector3.back * 2 : Vector3.zero;
+                        force += commands.left ? Vector3.left * 2 : Vector3.zero;
+                        force += commands.right ? Vector3.right * 2 : Vector3.zero;
 
-                    number = commands.number;
+                        foreach (var cube in serverCubes)
+                        {
+                            if (cube.Id.Equals(recievedMessage.GetId))
+                            {
+                                cube.GameObject.GetComponent<Rigidbody>().AddForceAtPosition(force, Vector3.zero, ForceMode.Impulse);
+                                break;
+                            }
+                        }
+
+                        n = commands.number;
+                    }
+                    sendClientCommandACK(n, recievedMessage.GetId);
+
                 }
-                sendClientCommandACK(number, id);
+                
             }
         }
 
@@ -125,19 +128,12 @@ namespace custom.Server
             {
                 throw new Exception("Invalid ID");
             }
-            var ackPacket = Packet.Obtain();
-            ackPacket.buffer.PutInt(number);
-            ackPacket.buffer.Flush();
-        
-            var remoteEp = new IPEndPoint(pi.EndPoint.Address, Constants.client_serverACKChannelPort);
-            serverACKChannel.Send(ackPacket, remoteEp);
-            ackPacket.Free();   
+            
+            mb.generateServerACKMessage(pi).setArguments(number).Send();
         }
     
         public void OnDestroy() {
-            visualizationChannel.Disconnect();
-            clientInputChannel.Disconnect();
-            serverACKChannel.Disconnect();
+            mb.disconnect();
         }
 
         public PlayerInfo GetPlayerById(int id)

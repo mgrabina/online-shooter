@@ -9,7 +9,8 @@ namespace custom.Utils
         private int id;
         Vector3 aux_position = new Vector3();
         Quaternion aux_rotation = new Quaternion();
-
+        private int lastCommandProcessed = -1, aux_lastCommandProcessed = -1;
+        
         public CubeEntity(GameObject go, int id){
             this.gameObject = go;
             this.id = id;
@@ -25,7 +26,7 @@ namespace custom.Utils
         public void Serialize(BitBuffer buffer) {
             aux_position = gameObject.transform.position;
             aux_rotation = gameObject.transform.rotation;
-            buffer.PutInt(id);
+            // buffer.PutInt(id);
             buffer.PutFloat(aux_position.x);
             buffer.PutFloat(aux_position.y);
             buffer.PutFloat(aux_position.z);
@@ -33,13 +34,13 @@ namespace custom.Utils
             buffer.PutFloat(aux_rotation.x);
             buffer.PutFloat(aux_rotation.y);
             buffer.PutFloat(aux_rotation.z);
-        
+            buffer.PutInt(lastCommandProcessed);
         }
 
         public void Deserialize(BitBuffer buffer) {
             aux_position = new Vector3();
             aux_rotation = new Quaternion();
-            id = buffer.GetInt();
+            // id = buffer.GetInt();
             aux_position.x = buffer.GetFloat();
             aux_position.y = buffer.GetFloat();
             aux_position.z = buffer.GetFloat();
@@ -47,6 +48,7 @@ namespace custom.Utils
             aux_rotation.x = buffer.GetFloat();
             aux_rotation.y = buffer.GetFloat();
             aux_rotation.z = buffer.GetFloat();
+            aux_lastCommandProcessed = buffer.GetInt();
         }
 
         public static CubeEntity createInterpolationEntity(CubeEntity previousEntity, CubeEntity nextEntity, float time)
@@ -64,6 +66,7 @@ namespace custom.Utils
             rotation.y = rotation1.y + deltaRotation.y;
             rotation.z = rotation1.z + deltaRotation.z;
             entity.aux_rotation = rotation;
+            entity.aux_lastCommandProcessed = nextEntity.aux_lastCommandProcessed;
             return entity;
         }
 
@@ -71,10 +74,17 @@ namespace custom.Utils
         {
             gameObject.transform.position = aux_position;
             gameObject.transform.rotation = aux_rotation;
+            lastCommandProcessed = aux_lastCommandProcessed;
         }
 
         public int Id => id;
 
         public GameObject GameObject => gameObject;
+
+        public int LastCommandProcessed
+        {
+            get { return lastCommandProcessed; }
+            set { lastCommandProcessed = value; }
+        }
     }
 }

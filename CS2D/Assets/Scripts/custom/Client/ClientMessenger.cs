@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using custom.Network;
 using custom.Utils;
@@ -12,25 +13,21 @@ namespace custom.Client
     {
     
         // Networking
-        
         [SerializeField] private GameObject clientCubePrefab;
-        private List<CubeEntity> clientCubes;
         private HashSet<int> playerIds = new HashSet<int>();
-    
+        private List<CubeEntity> clientCubes;
         private List<Commands> commands = new List<Commands>();
         private List<Snapshot> interpolationBuffer = new List<Snapshot>();
-
-        private float accumulatedTime_c2 = 0f;
-        private float clientTime = 0f;
-        private bool clientResponding = false;
-        private int packetNumber = 0;
-
         private MessageBuilder mb;
-        
-        public int id;
 
-        private bool registered = false;
-    
+        
+        // State Params
+        public int id;
+        private bool clientResponding = false, registered = false, connected = true;
+        private float clientTime = 0f, accumulatedTime_c2 = 0f;
+        private int packetNumber = 0, lastCommandLocallyExcecuted = 0;
+        private Rigidbody myRigidbody;
+
         private void Start()
         {
             id = generate_id();
@@ -48,10 +45,19 @@ namespace custom.Client
 
             checkPlayersJoined();
 
-            if (registered)
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                connected = !connected;
+            }
+            
+            if (registered && connected)
             {
                 recieveCommandsACK();
         
+                ReadInput();
+
+                Predict();
+                
                 sendCommands();
         
                 updateServerVisualization();
@@ -71,11 +77,6 @@ namespace custom.Client
                 if (message.GetType == Message.Type.PLAYER_JOINED)
                 {
                     int idJoined = ((PlayerJoinedMessage) message).IdJoined();
-                    if (idJoined == this.id)
-                    {
-                        registered = true;
-                    }
-
                     if (playerIds.Contains(idJoined))
                     {
                         continue;
@@ -83,7 +84,11 @@ namespace custom.Client
                     playerIds.Add(idJoined);
                     var clientCube = Instantiate(clientCubePrefab, new Vector3(0, 0.5f, 0), new Quaternion());
                     clientCubes.Add(new CubeEntity(clientCube, idJoined));
-                    
+                    if (idJoined == this.id)
+                    {
+                        registered = true;
+                        myRigidbody = clientCube.GetComponent<Rigidbody>();
+                    }
                 }
             }
         }
@@ -104,6 +109,8 @@ namespace custom.Client
                 {
                     interpolationBuffer.Add(snapshot);
                 }
+
+                Negociate();
             }
 
             // Interpolation
@@ -127,7 +134,6 @@ namespace custom.Client
         {
             if (accumulatedTime_c2 >= Constants.sendRate)
             {
-                ReadInput();             
                 mb.generateClientUpdateMessage().setArguments(commands).Send();
                 accumulatedTime_c2 -= Constants.sendRate;
             }
@@ -158,7 +164,7 @@ namespace custom.Client
             var nextTime = interpolationBuffer[1].GetPacketNumber() * (1f / Constants.pps);
             var period = (clientTime - previousTime) / (nextTime - previousTime);
             var interpolatedSnapshot =
-                Snapshot.createInterpolationSnapshot(interpolationBuffer[0], interpolationBuffer[1], period);
+                Snapshot.createInterpolationSnapshot(interpolationBuffer[0], interpolationBuffer[1], period, id);
             interpolatedSnapshot.applyChanges();
     
             if (clientTime > nextTime)
@@ -176,17 +182,40 @@ namespace custom.Client
                 Input.GetKeyDown(KeyCode.LeftArrow),
                 Input.GetKeyDown(KeyCode.RightArrow),
                 Input.GetKeyDown(KeyCode.Space), timeout);
-            commands.Add(command);
-            // if (Input.GetKeyDown(KeyCode.D))
-            // {
-            //     clientInputChannel.Disconnect();
-            // }
-            // if (Input.GetKeyDown(KeyCode.C))
-            // {
-            //     clientInputChannel = new Channel(Constants.server_clientInputChannelPort);
-            // }
+            if (command.notNull())
+            {
+                commands.Add(command);
+            }
+            else
+            {
+                packetNumber--;
+            }
         }
-    
+
+        private void Predict()
+        {
+            foreach (Commands commands in commands)
+            {
+                if (commands.number > lastCommandLocallyExcecuted)
+                {
+                    lastCommandLocallyExcecuted = commands.number;
+                    Vector3 force = Commands.generateForce(commands);                        
+                    myRigidbody.AddForceAtPosition(force, Vector3.zero, ForceMode.Impulse);
+                }
+            }
+        }
+
+        private void Negociate()
+        {
+            CubeEntity lastFromServer = interpolationBuffer.Last().getEntityById(id);
+            lastFromServer.applyChanges();
+            if (lastFromServer.LastCommandProcessed.Equals(lastFromServer))
+            {
+                // Should be equal status
+                Debug.Log("aca");
+            }
+        }
+        
         private static int generate_id()
         {
             return Random.Range(0, 100);

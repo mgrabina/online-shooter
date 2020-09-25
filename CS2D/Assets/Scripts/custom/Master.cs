@@ -9,7 +9,7 @@ namespace custom
         public GameObject shadowClientGO;
     
         private static float floorLimit = 4f;
-        private static float minIntervalBetweenNewClients = 2;
+        private static float minIntervalBetweenNewClients = 1;
 
         private float accumulatedTimeWithoutCreatingNewClients = 0;
     

@@ -1,5 +1,6 @@
 
 using custom.Network;
+using UnityEngine;
 
 namespace custom.Utils
 {
@@ -55,6 +56,22 @@ namespace custom.Utils
             left = buffer.GetBit();
             right = buffer.GetBit();
             space = buffer.GetBit();
+        }
+
+        public static Vector3 generateForce(Commands commands)
+        {
+            Vector3 force = Vector3.zero;
+            force += commands.space ? Vector3.up * 5 : Vector3.zero;
+            force += commands.up ? Vector3.forward * 2 : Vector3.zero;
+            force += commands.down ? Vector3.back * 2 : Vector3.zero;
+            force += commands.left ? Vector3.left * 2 : Vector3.zero;
+            force += commands.right ? Vector3.right * 2 : Vector3.zero;
+            return force;
+        }
+
+        public bool notNull()
+        {
+            return down || up || right || left || space;
         }
     }
 }

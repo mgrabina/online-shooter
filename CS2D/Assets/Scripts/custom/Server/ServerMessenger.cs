@@ -95,19 +95,14 @@ namespace custom.Server
                     int n = -1;
                     foreach (Commands commands in ((ClientUpdateMessage)recievedMessage).Commands)
                     {
-                        
-                        Vector3 force = Vector3.zero;
-                        force += commands.space ? Vector3.up * 5 : Vector3.zero;
-                        force += commands.up ? Vector3.forward * 2 : Vector3.zero;
-                        force += commands.down ? Vector3.back * 2 : Vector3.zero;
-                        force += commands.left ? Vector3.left * 2 : Vector3.zero;
-                        force += commands.right ? Vector3.right * 2 : Vector3.zero;
+                        Vector3 force = Commands.generateForce(commands);                        
 
                         foreach (var cube in serverCubes)
                         {
                             if (cube.Id.Equals(recievedMessage.GetId))
                             {
                                 cube.GameObject.GetComponent<Rigidbody>().AddForceAtPosition(force, Vector3.zero, ForceMode.Impulse);
+                                cube.LastCommandProcessed = commands.number;
                                 break;
                             }
                         }

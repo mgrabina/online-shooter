@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using custom.Network;
+using UnityEngine;
 
 namespace custom.Utils
 {
@@ -33,12 +34,15 @@ namespace custom.Utils
             entities = news;
         }
 
-        public static Snapshot createInterpolationSnapshot(Snapshot previous, Snapshot next, float time)
+        public static Snapshot createInterpolationSnapshot(Snapshot previous, Snapshot next, float time, int id)
         {
             List<CubeEntity> cubeEntities = new List<CubeEntity>();
             for (int i = 0; i < previous.entities.Count; i++)
             {
-                cubeEntities.Add(CubeEntity.createInterpolationEntity(previous.entities[i], next.entities[i], time));
+                if (previous.entities[i].Id != id)
+                {
+                    cubeEntities.Add(CubeEntity.createInterpolationEntity(previous.entities[i], next.entities[i], time));
+                }
             }
             return new Snapshot(-1, cubeEntities);
         }
@@ -51,6 +55,19 @@ namespace custom.Utils
         public void applyChanges()
         {    
             this.entities.ForEach(c => c.applyChanges());;
+        }
+
+        public CubeEntity getEntityById(int id)
+        {
+            foreach (var aux in entities)
+            {
+                if (aux.Id == id)
+                {
+                    return aux;
+                }
+            }
+
+            return null;
         }
     }
 }

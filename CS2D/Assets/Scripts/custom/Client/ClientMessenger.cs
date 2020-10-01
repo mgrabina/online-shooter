@@ -242,5 +242,9 @@ namespace custom.Client
         {
             return playerIds.Contains(id);
         }
+        
+        public void OnDestroy() {
+            mb.disconnect();
+        }
     }
 }

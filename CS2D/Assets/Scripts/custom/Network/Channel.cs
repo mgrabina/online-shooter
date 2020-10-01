@@ -41,7 +41,6 @@ namespace custom.Network
 
 		public void Disconnect() {
 			if (udpClient != null) {
-				Debug.Log("socket closed");
 				udpClient.Close();
 				udpClient = null;
 			}

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using custom.Client;
 using custom.Network;
 using UnityEngine;
 
@@ -21,27 +22,35 @@ namespace custom.Utils
             entities.ForEach(c => c.Serialize(buffer));
         }
 
-        public void Deserialize(BitBuffer buffer)
+        public void Deserialize(BitBuffer buffer, ClientMessenger cm)
         {
             packetNumber = buffer.GetInt();
             List<CubeEntity> news = new List<CubeEntity>();
-            entities.ForEach(c =>
+            while (buffer.HasRemaining())
             {
-                CubeEntity aux = new CubeEntity(c.GameObject, c.Id);
-                aux.Deserialize(buffer);
+                CubeEntity aux = new CubeEntity(null, -1);
+                aux.DeserializeSpecific(buffer, entities, cm);
                 news.Add(aux);
-            });
+            }
             entities = news;
         }
 
-        public static Snapshot createInterpolationSnapshot(Snapshot previous, Snapshot next, float time, int id)
+        public static Snapshot createInterpolationSnapshot(Snapshot previous, Snapshot next, float time, int id, ClientMessenger cm)
         {
             List<CubeEntity> cubeEntities = new List<CubeEntity>();
             for (int i = 0; i < previous.entities.Count; i++)
             {
-                if (previous.entities[i].Id != id)
+                int nextId = next.entities[i].Id;
+                if (nextId != id)
                 {
-                    cubeEntities.Add(CubeEntity.createInterpolationEntity(previous.entities[i], next.entities[i], time));
+                    if (cm.isIdRegistered(nextId))
+                    {
+                        cubeEntities.Add(CubeEntity.createInterpolationEntity(previous.entities[i], next.entities[i], time));
+                    }
+                    else
+                    {
+                        // cubeEntities.Add(CubeEntity.createInterpolationEntity(new CubeEntity(go, nextId), next.entities[i], time));
+                    }
                 }
             }
             return new Snapshot(-1, cubeEntities);
@@ -52,9 +61,15 @@ namespace custom.Utils
             return packetNumber;
         }
 
-        public void applyChanges()
+        public void applyChanges(int id)
         {    
-            this.entities.ForEach(c => c.applyChanges());;
+            this.entities.ForEach(c =>
+            {
+                if (c.Id != id)
+                {
+                    c.applyChanges();
+                }
+            });;
         }
 
         public CubeEntity getEntityById(int id)

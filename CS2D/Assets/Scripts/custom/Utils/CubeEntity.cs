@@ -1,4 +1,7 @@
-﻿using custom.Network;
+﻿using System;
+using System.Collections.Generic;
+using custom.Client;
+using custom.Network;
 using UnityEngine;
 
 namespace custom.Utils
@@ -6,27 +9,20 @@ namespace custom.Utils
     public class CubeEntity
     {
         private GameObject gameObject;
-        private int id;
+        private int id = -1;
         Vector3 aux_position = new Vector3();
         Quaternion aux_rotation = new Quaternion();
-        private int lastCommandProcessed = -1, aux_lastCommandProcessed = -1;
+        private int lastCommandProcessed = -1, aux_lastCommandProcessed = -1, aux_id = -1;
         
         public CubeEntity(GameObject go, int id){
             this.gameObject = go;
             this.id = id;
         }
 
-        public CubeEntity(Vector3 position, Quaternion rotation, GameObject gameObject)
-        {
-            this.aux_position = position;
-            this.aux_rotation = rotation;
-            this.gameObject = gameObject;
-        }
-
         public void Serialize(BitBuffer buffer) {
             aux_position = gameObject.transform.position;
             aux_rotation = gameObject.transform.rotation;
-            // buffer.PutInt(id);
+            buffer.PutInt(id);
             buffer.PutFloat(aux_position.x);
             buffer.PutFloat(aux_position.y);
             buffer.PutFloat(aux_position.z);
@@ -40,7 +36,7 @@ namespace custom.Utils
         public void Deserialize(BitBuffer buffer) {
             aux_position = new Vector3();
             aux_rotation = new Quaternion();
-            // id = buffer.GetInt();
+            aux_id = buffer.GetInt();
             aux_position.x = buffer.GetFloat();
             aux_position.y = buffer.GetFloat();
             aux_position.z = buffer.GetFloat();
@@ -49,6 +45,31 @@ namespace custom.Utils
             aux_rotation.y = buffer.GetFloat();
             aux_rotation.z = buffer.GetFloat();
             aux_lastCommandProcessed = buffer.GetInt();
+        }
+        
+        public void DeserializeSpecific(BitBuffer buffer, List<CubeEntity> entities, ClientMessenger cm) {
+            Deserialize(buffer);
+            CubeEntity finded = null;
+            foreach(var c in entities)
+            {
+                if (c.id == aux_id)
+                {
+                    finded = c;
+                    break;
+                }   
+            }
+
+            if (finded == null)
+            {
+                this.gameObject = cm.createClient(aux_id);
+                this.id = aux_id;
+            }
+            else
+            {
+                this.gameObject = finded.gameObject;
+                this.id = finded.id;
+            }
+
         }
 
         public static CubeEntity createInterpolationEntity(CubeEntity previousEntity, CubeEntity nextEntity, float time)
@@ -72,6 +93,10 @@ namespace custom.Utils
 
         public void applyChanges()
         {
+            if (aux_id != id && id != -1 && aux_id != -1)
+            {
+                Debug.Log("This should not happen.");
+            }
             gameObject.transform.position = aux_position;
             gameObject.transform.rotation = aux_rotation;
             lastCommandProcessed = aux_lastCommandProcessed;
@@ -80,6 +105,12 @@ namespace custom.Utils
         public int Id => id;
 
         public GameObject GameObject => gameObject;
+
+        public Vector3 AuxPosition => aux_position;
+
+        public Quaternion AuxRotation => aux_rotation;
+
+        public int AuxLastCommandProcessed => aux_lastCommandProcessed;
 
         public int LastCommandProcessed
         {

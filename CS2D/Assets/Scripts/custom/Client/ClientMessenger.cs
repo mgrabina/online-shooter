@@ -26,8 +26,8 @@ namespace custom.Client
         private bool clientResponding = false, registered = false, connected = true;
         private float clientTime = 0f, accumulatedTime_c2 = 0f;
         private int packetNumber = 0, lastCommandLocallyExcecuted = 0;
-        private Rigidbody myRigidbody;
-
+        private Rigidbody myRigidbody, concilliateRB;
+        
         private void Start()
         {
             id = generate_id();
@@ -81,13 +81,12 @@ namespace custom.Client
                     {
                         continue;
                     }
-                    playerIds.Add(idJoined);
-                    var clientCube = Instantiate(clientCubePrefab, new Vector3(0, 0.5f, 0), new Quaternion());
-                    clientCubes.Add(new CubeEntity(clientCube, idJoined));
+                    GameObject clientCube = createClient(idJoined);
                     if (idJoined == this.id)
                     {
                         registered = true;
                         myRigidbody = clientCube.GetComponent<Rigidbody>();
+                        concilliateRB = Rigidbody.Instantiate(myRigidbody);
                     }
                 }
             }
@@ -101,7 +100,7 @@ namespace custom.Client
                 // Recieved
                 var snapshot = new Snapshot(-1, clientCubes);
                 var buffer = message.Packet.buffer;
-                snapshot.Deserialize(buffer);
+                snapshot.Deserialize(buffer, this);
 
                 int interpolationBufferSize = interpolationBuffer.Count;
                 if (interpolationBufferSize == 0
@@ -110,7 +109,7 @@ namespace custom.Client
                     interpolationBuffer.Add(snapshot);
                 }
 
-                Negociate();
+                Concilliate();
             }
 
             // Interpolation
@@ -164,8 +163,8 @@ namespace custom.Client
             var nextTime = interpolationBuffer[1].GetPacketNumber() * (1f / Constants.pps);
             var period = (clientTime - previousTime) / (nextTime - previousTime);
             var interpolatedSnapshot =
-                Snapshot.createInterpolationSnapshot(interpolationBuffer[0], interpolationBuffer[1], period, id);
-            interpolatedSnapshot.applyChanges();
+                Snapshot.createInterpolationSnapshot(interpolationBuffer[0], interpolationBuffer[1], period, id, this);
+            interpolatedSnapshot.applyChanges(id);
     
             if (clientTime > nextTime)
             {
@@ -205,20 +204,43 @@ namespace custom.Client
             }
         }
 
-        private void Negociate()
+        private void Concilliate()
         {
             CubeEntity lastFromServer = interpolationBuffer.Last().getEntityById(id);
-            lastFromServer.applyChanges();
-            if (lastFromServer.LastCommandProcessed.Equals(lastFromServer))
+            concilliateRB.transform.position = lastFromServer.AuxPosition;
+            concilliateRB.transform.rotation = lastFromServer.AuxRotation;
+            int currentServerCommandExcecuted = lastFromServer.AuxLastCommandProcessed;
+    
+            foreach (var command in commands)    
             {
-                // Should be equal status
-                Debug.Log("aca");
+                if (currentServerCommandExcecuted < command.number)
+                {
+                    currentServerCommandExcecuted = command.number;
+                    Vector3 force = Commands.generateForce(command);
+                    concilliateRB.AddForceAtPosition(force, Vector3.zero, ForceMode.Impulse);
+                }
             }
+
+            myRigidbody.transform.position = concilliateRB.transform.position;
+            myRigidbody.transform.rotation = concilliateRB.transform.rotation;
         }
-        
+
         private static int generate_id()
         {
             return Random.Range(0, 100);
+        }
+
+        public GameObject createClient(int idJoined)
+        {
+            playerIds.Add(idJoined);
+            var clientCube = Instantiate(clientCubePrefab, new Vector3(0, 0.5f, 0), new Quaternion());
+            clientCubes.Add(new CubeEntity(clientCube, idJoined));
+            return clientCube;
+        }
+
+        public bool isIdRegistered(int id)
+        {
+            return playerIds.Contains(id);
         }
     }
 }

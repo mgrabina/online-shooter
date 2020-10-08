@@ -66,13 +66,13 @@ namespace custom.Client
 
         private void register()
         {
-            mb.generateJoinGameMessage(id).Send();
+            mb.GenerateJoinGameMessage(id).Send();
         }
 
         private void checkPlayersJoined()
         {
             Message message;
-            while ((message = mb.getPlayerJoinedChannelMessage()) != null)
+            while ((message = mb.GETChannelMessage()) != null)
             {
                 if (message.GetType == Message.Type.PLAYER_JOINED)
                 {
@@ -95,7 +95,7 @@ namespace custom.Client
         private void updateServerVisualization()
         {
             Message message;
-            if ((message = mb.getServerBroadcastChannelMessage()) != null)
+            if ((message = mb.GETChannelMessage()) != null)
             {
                 // Recieved
                 var snapshot = new Snapshot(-1, clientCubes);
@@ -133,7 +133,7 @@ namespace custom.Client
         {
             if (accumulatedTime_c2 >= Constants.sendRate)
             {
-                mb.generateClientUpdateMessage().setArguments(commands).Send();
+                mb.GenerateClientUpdateMessage().setArguments(commands).Send();
                 accumulatedTime_c2 -= Constants.sendRate;
             }
         }
@@ -141,7 +141,7 @@ namespace custom.Client
         private void recieveCommandsACK()
         {
             Message message;
-            while ((message = mb.getServerACKChannelMessage()) != null)
+            while ((message = mb.GETChannelMessage()) != null)
             {
                 var toDelete = ((ServerACKMessage) message).getNumber();
                 while (commands.Count != 0)
@@ -244,7 +244,7 @@ namespace custom.Client
         }
         
         public void OnDestroy() {
-            mb.disconnect();
+            mb.Disconnect();
         }
     }
 }

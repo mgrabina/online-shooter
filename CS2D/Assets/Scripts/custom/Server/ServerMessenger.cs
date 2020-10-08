@@ -51,7 +51,7 @@ namespace custom.Server
         public void ListenForNewConnections()
         {
             Message newMessage;
-            while ((newMessage = mb.getRegistrationChannelMessage()) != null)
+            while ((newMessage = mb.GETChannelMessage()) != null)
             {
                 int id = newMessage.GetId;
                 IPEndPoint endPoint = newMessage.Packet.fromEndPoint;
@@ -69,7 +69,7 @@ namespace custom.Server
         {
             foreach (var player in players)
             {
-                mb.generatePlayerJoinedMessage(player).setArguments(id).Send();
+                mb.GeneratePlayerJoinedMessage(player).setArguments(id).Send();
             }
         }
     
@@ -79,7 +79,7 @@ namespace custom.Server
             {
                 foreach (var player in players)
                 {
-                    mb.generateServerUpdateMessage(player).setArguments(new Snapshot(this.packetNumber++, serverCubes)).Send();
+                    mb.GenerateServerUpdateMessage(player).setArguments(new Snapshot(this.packetNumber++, serverCubes)).Send();
                     accumulatedTime_c1 -= Constants.sendRate;
                 }
             }   
@@ -88,7 +88,7 @@ namespace custom.Server
         public void recieveClientCommands()
         {
             Message recievedMessage;
-            while ((recievedMessage = mb.getClientInputChannelMessage()) != null)
+            while ((recievedMessage = mb.GETChannelMessage()) != null)
             {
                 if (recievedMessage.GetType == Message.Type.CLIENT_UPDATE)
                 {
@@ -124,11 +124,11 @@ namespace custom.Server
                 throw new Exception("Invalid ID");
             }
             
-            mb.generateServerACKMessage(pi).setArguments(number).Send();
+            mb.GenerateServerAckMessage(pi).setArguments(number).Send();
         }
     
         public void OnDestroy() {
-            mb.disconnect();
+            mb.Disconnect();
         }
 
         public PlayerInfo GetPlayerById(int id)

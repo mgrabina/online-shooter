@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 82213771359674271}
   - component: {fileID: 3375908508352804987}
   - component: {fileID: -5351892798127687383}
+  - component: {fileID: 7672597549860084050}
   m_Layer: 9
   m_Name: ClientCube
   m_TagString: Untagged
@@ -105,7 +106,25 @@ BoxCollider:
   m_GameObject: {fileID: 82213771359674269}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!143 &7672597549860084050
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 82213771359674269}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Height: 1
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}

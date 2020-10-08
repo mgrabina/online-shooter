@@ -42,6 +42,11 @@ namespace custom.Network
         {
             return new ServerUpdateMessage(-1, _channel, player.EndPoint.Address.ToString(), Constants.clients_base_port + 10*player.Id);
         }
+        
+        public InitStatusMessage GenerateInitStatusMessage(PlayerInfo player)
+        {
+            return new InitStatusMessage(-1, _channel, player.EndPoint.Address.ToString(), Constants.clients_base_port + 10*player.Id);
+        }
 
         public ServerACKMessage GenerateServerAckMessage(PlayerInfo player)
         {

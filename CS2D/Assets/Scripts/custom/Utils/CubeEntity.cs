@@ -49,25 +49,25 @@ namespace custom.Utils
         
         public void DeserializeSpecific(BitBuffer buffer, List<CubeEntity> entities, ClientMessenger cm) {
             Deserialize(buffer);
-            CubeEntity finded = null;
+            CubeEntity founded = null;
             foreach(var c in entities)
             {
                 if (c.id == aux_id)
                 {
-                    finded = c;
+                    founded = c;
                     break;
                 }   
             }
 
-            if (finded == null)
+            if (founded == null)
             {
                 this.gameObject = cm.createClient(aux_id);
                 this.id = aux_id;
             }
             else
             {
-                this.gameObject = finded.gameObject;
-                this.id = finded.id;
+                this.gameObject = founded.gameObject;
+                this.id = founded.id;
             }
 
         }
@@ -88,6 +88,16 @@ namespace custom.Utils
             rotation.z = rotation1.z + deltaRotation.z;
             entity.aux_rotation = rotation;
             entity.aux_lastCommandProcessed = nextEntity.aux_lastCommandProcessed;
+            return entity;
+        }
+
+        public static CubeEntity createFromUnique(CubeEntity ce)
+        {
+            var entity = new CubeEntity(ce.gameObject, ce.id);
+            entity.aux_position = entity.aux_position + ce.aux_position;
+            var rotation = ce.aux_rotation;
+            entity.aux_rotation = rotation;
+            entity.aux_lastCommandProcessed = ce.aux_lastCommandProcessed;
             return entity;
         }
 

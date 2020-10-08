@@ -56,6 +56,16 @@ namespace custom.Utils
             return new Snapshot(-1, cubeEntities);
         }
 
+        public static Snapshot setUniqueSnapshot(Snapshot unique)
+        {
+            List<CubeEntity> cubeEntities = new List<CubeEntity>();
+            for (int i = 0; i < unique.entities.Count; i++)
+            {
+                cubeEntities.Add(CubeEntity.createFromUnique(unique.entities[i]));
+            }
+            return new Snapshot(-1, cubeEntities);
+        }
+        
         public int GetPacketNumber()
         {
             return packetNumber;

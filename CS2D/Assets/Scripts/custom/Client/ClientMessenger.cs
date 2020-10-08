@@ -4,8 +4,6 @@ using System.Net;
 using custom.Network;
 using custom.Utils;
 using UnityEngine;
-using Channel = lib.Network.Channel;
-using Packet = lib.Network.Packet;
 
 namespace custom.Client
 {
@@ -23,7 +21,7 @@ namespace custom.Client
         
         // State Params
         public int id;
-        private bool clientResponding = false, registered = false, connected = true;
+        private bool clientResponding = false, registered = false, connected = true, initialized = false;
         private float clientTime = 0f, accumulatedTime_c2 = 0f;
         private int packetNumber = 0, lastCommandLocallyExcecuted = 0;
         private Rigidbody myRigidbody, concilliateRB;
@@ -42,8 +40,8 @@ namespace custom.Client
         private void Update()
         {
             accumulatedTime_c2 += Time.deltaTime;
-
-            checkPlayersJoined();
+            
+            getAndProcessMessage();
 
             if (Input.GetKeyDown(KeyCode.D))
             {
@@ -52,8 +50,6 @@ namespace custom.Client
             
             if (registered && connected)
             {
-                recieveCommandsACK();
-        
                 ReadInput();
 
                 Predict();
@@ -64,54 +60,86 @@ namespace custom.Client
             }
         }
 
+        private void getAndProcessMessage()
+        {
+            Message message;
+            while ((message = mb.GETChannelMessage()) != null)
+            {
+                switch (message.GetType)
+                {
+                    case Message.Type.PLAYER_JOINED: processPlayerJoined((PlayerJoinedMessage) message); break;
+                    case Message.Type.INIT_STATUS:
+                        if (initialized)
+                        {
+                            return;
+                        }
+                        processInitStatus((InitStatusMessage) message); break;
+                    case Message.Type.GAME_STATE_UPDATE:
+                        if (!registered || !connected)
+                        {
+                            return;
+                        }
+                        processServerUpdate((ServerUpdateMessage) message); break;
+                    case Message.Type.CLIENT_UPDATE_ACK: 
+                        if (!registered || !connected)
+                        {
+                            return;
+                        }
+                        processServerACK((ServerACKMessage) message); break;
+                }
+            }
+        }
+
         private void register()
         {
             mb.GenerateJoinGameMessage(id).Send();
         }
 
-        private void checkPlayersJoined()
+        private void processInitStatus(InitStatusMessage message)
         {
-            Message message;
-            while ((message = mb.GETChannelMessage()) != null)
+            initialized = !initialized;
+            var snapshot = new Snapshot(-1, clientCubes);
+            var buffer = message.Packet.buffer;
+            snapshot.Deserialize(buffer, this);
+            
+            Snapshot.setUniqueSnapshot(snapshot).applyChanges(id);
+        }
+        
+        private void processPlayerJoined(PlayerJoinedMessage message)
+        {
+            int idJoined = (message).IdJoined();
+            if (playerIds.Contains(idJoined))
             {
-                if (message.GetType == Message.Type.PLAYER_JOINED)
-                {
-                    int idJoined = ((PlayerJoinedMessage) message).IdJoined();
-                    if (playerIds.Contains(idJoined))
-                    {
-                        continue;
-                    }
-                    GameObject clientCube = createClient(idJoined);
-                    if (idJoined == this.id)
-                    {
-                        registered = true;
-                        myRigidbody = clientCube.GetComponent<Rigidbody>();
-                        concilliateRB = Rigidbody.Instantiate(myRigidbody);
-                    }
-                }
+                return;
+            }
+            GameObject clientCube = createClient(idJoined);
+            if (idJoined == this.id)
+            {
+                registered = true;
+                myRigidbody = clientCube.GetComponent<Rigidbody>();
+                concilliateRB = Rigidbody.Instantiate(myRigidbody);
             }
         }
 
-        private void updateServerVisualization()
+        private void processServerUpdate(ServerUpdateMessage message)
         {
-            Message message;
-            if ((message = mb.GETChannelMessage()) != null)
+            // Recieved
+            var snapshot = new Snapshot(-1, clientCubes);
+            var buffer = message.Packet.buffer;
+            snapshot.Deserialize(buffer, this);
+
+            int interpolationBufferSize = interpolationBuffer.Count;
+            if (interpolationBufferSize == 0
+                || snapshot.GetPacketNumber() > interpolationBuffer[interpolationBufferSize - 1].GetPacketNumber())
             {
-                // Recieved
-                var snapshot = new Snapshot(-1, clientCubes);
-                var buffer = message.Packet.buffer;
-                snapshot.Deserialize(buffer, this);
-
-                int interpolationBufferSize = interpolationBuffer.Count;
-                if (interpolationBufferSize == 0
-                    || snapshot.GetPacketNumber() > interpolationBuffer[interpolationBufferSize - 1].GetPacketNumber())
-                {
-                    interpolationBuffer.Add(snapshot);
-                }
-
-                Concilliate();
+                interpolationBuffer.Add(snapshot);
             }
 
+            Concilliate();
+        }
+        
+        private void updateServerVisualization()
+        {
             // Interpolation
             if (interpolationBuffer.Count >= Constants.requiredSnapshots)
             {
@@ -138,24 +166,20 @@ namespace custom.Client
             }
         }
 
-        private void recieveCommandsACK()
+        private void processServerACK(ServerACKMessage message)
         {
-            Message message;
-            while ((message = mb.GETChannelMessage()) != null)
+            var toDelete = message.getNumber();
+            while (commands.Count != 0)
             {
-                var toDelete = ((ServerACKMessage) message).getNumber();
-                while (commands.Count != 0)
+                if (commands[0].number <= toDelete || commands[0].timestamp < Time.time)
                 {
-                    if (commands[0].number <= toDelete || commands[0].timestamp < Time.time)
-                    {
-                        commands.RemoveAt(0);
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    commands.RemoveAt(0);
                 }
-            }   
+                else
+                {
+                    break;
+                }
+            }
         }
         private void Interpolate()
         {

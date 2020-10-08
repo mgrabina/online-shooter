@@ -4,7 +4,6 @@ using System.Net;
 using custom.Client;
 using custom.Network;
 using custom.Utils;
-using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -40,31 +39,57 @@ namespace custom.Server
                 online = !online;
             }
 
+            getAndProcessMessage();
+
             if (online)
             {
-                ListenForNewConnections();
                 SendUpdates();
-                recieveClientCommands();
             }
         }
 
-        public void ListenForNewConnections()
+        private void getAndProcessMessage()
         {
-            Message newMessage;
-            while ((newMessage = mb.GETChannelMessage()) != null)
+            Message message;
+            while ((message = mb.GETChannelMessage()) != null)
             {
-                int id = newMessage.GetId;
-                IPEndPoint endPoint = newMessage.Packet.fromEndPoint;
-                if (!players.Contains(new PlayerInfo(id, endPoint)))
+                if (!online)
                 {
-                    players.Add(new PlayerInfo(id, endPoint));
-                    var serverCube = Instantiate(serverGameObject, new Vector3(Random.Range(-4, 4), 1, Random.Range(-4,4)), Quaternion.identity);
-                    serverCubes.Add( new CubeEntity(serverCube, id) );
-                    SendPlayerJoined(id);
+                    return;
+                }
+                switch (message.GetType)
+                {
+                    case Message.Type.JOIN_GAME: processJoinGame((JoinGameMessage) message); break;
+                    case Message.Type.CLIENT_UPDATE: processClientInput((ClientUpdateMessage) message); break;
                 }
             }
         }
+        
+        
+        public void processJoinGame(JoinGameMessage message)
+        {
+            int id = message.GetId;
+            IPEndPoint endPoint = message.Packet.fromEndPoint;
+            if (!players.Contains(new PlayerInfo(id, endPoint)))
+            {
+                players.Add(new PlayerInfo(id, endPoint));
+                var serverCube = Instantiate(serverGameObject, new Vector3(Random.Range(-4, 4), 1, Random.Range(-4,4)), Quaternion.identity);
+                serverCubes.Add( new CubeEntity(serverCube, id) );
+                SendPlayerJoined(id);
+                SendInitStatus(id);
+            }
+            
+        }
 
+        public void SendInitStatus(int id)
+        {
+            PlayerInfo pi = GetPlayerById(id);
+            if (pi == null)
+            {
+                throw new Exception("Invalid ID");
+            }
+            mb.GenerateInitStatusMessage(pi).setArguments(new Snapshot(this.packetNumber++, serverCubes)).Send();
+        }
+        
         public void SendPlayerJoined(int id)
         {
             foreach (var player in players)
@@ -85,35 +110,26 @@ namespace custom.Server
             }   
         }
 
-        public void recieveClientCommands()
+        public void processClientInput(ClientUpdateMessage message)
         {
-            Message recievedMessage;
-            while ((recievedMessage = mb.GETChannelMessage()) != null)
+            int n = -1;
+            foreach (Commands commands in (message).Commands)
             {
-                if (recievedMessage.GetType == Message.Type.CLIENT_UPDATE)
+                Vector3 force = Commands.generateForce(commands);                        
+
+                foreach (var cube in serverCubes)
                 {
-                    int n = -1;
-                    foreach (Commands commands in ((ClientUpdateMessage)recievedMessage).Commands)
+                    if (cube.Id.Equals(message.GetId))
                     {
-                        Vector3 force = Commands.generateForce(commands);                        
-
-                        foreach (var cube in serverCubes)
-                        {
-                            if (cube.Id.Equals(recievedMessage.GetId))
-                            {
-                                cube.GameObject.GetComponent<Rigidbody>().AddForceAtPosition(force, Vector3.zero, ForceMode.Impulse);
-                                cube.LastCommandProcessed = commands.number;
-                                break;
-                            }
-                        }
-
-                        n = commands.number;
+                        cube.GameObject.GetComponent<Rigidbody>().AddForceAtPosition(force, Vector3.zero, ForceMode.Impulse);
+                        cube.LastCommandProcessed = commands.number;
+                        break;
                     }
-                    sendClientCommandACK(n, recievedMessage.GetId);
-
                 }
-                
+
+                n = commands.number;
             }
+            sendClientCommandACK(n, message.GetId);
         }
 
         public void sendClientCommandACK(int number, int id)

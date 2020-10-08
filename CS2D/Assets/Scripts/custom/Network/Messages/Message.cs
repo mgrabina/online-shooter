@@ -68,6 +68,7 @@ namespace custom.Network
             switch (type)
             {
                 case Type.JOIN_GAME: return new JoinGameMessage(type, id, incomePacket);
+                case Type.INIT_STATUS: return new InitStatusMessage(type, id, incomePacket);
                 case Type.PLAYER_JOINED: return new PlayerJoinedMessage(type, id, incomePacket);
                 case Type.CLIENT_UPDATE: return new ClientUpdateMessage(type, id, incomePacket);
                 case Type.GAME_STATE_UPDATE: return new ServerUpdateMessage(type, id, incomePacket);
@@ -80,6 +81,7 @@ namespace custom.Network
         {
             JOIN_GAME,
             PLAYER_JOINED,
+            INIT_STATUS,
             
             CLIENT_UPDATE,
             CLIENT_UPDATE_ACK,
@@ -95,7 +97,8 @@ namespace custom.Network
         {
             Type.JOIN_GAME,
             Type.PLAYER_JOINED,
-
+            Type.INIT_STATUS,
+            
             Type.CLIENT_UPDATE,
             Type.CLIENT_UPDATE_ACK,
             Type.GAME_STATE_UPDATE,

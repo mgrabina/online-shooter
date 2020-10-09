@@ -13,5 +13,9 @@
         public static int pps = 100;
         public static int requiredSnapshots = 3;
         public static float sendRate = 1f / pps;
+        
+        public static float speed = 1.5f;
+        public static float rotationSpeed = 1.0f;
+
     }
 }

@@ -43,6 +43,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97d6205867ab43298d285cfff4ea2943, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clientCubePrefab: {fileID: 82213771359674269, guid: 08c55863e61ca7b70ae081f6741d4a23,
+  clientCubePrefab: {fileID: 7706759769959400833, guid: 264a353f08767e54ab71eb5b4ea18ec8,
     type: 3}
   id: 0

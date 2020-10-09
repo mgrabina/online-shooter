@@ -7,28 +7,25 @@ namespace custom.Utils
     public class Commands
     {
         public int number;
-        public bool up, down, left, right, space;
+        public bool space;
+        public float x, y;
         public float timestamp;
 
 
-        public Commands(int number, bool up, bool down, bool left, bool right, bool space, float timestamp)
+        public Commands(int number, float x, float y, bool space, float timestamp)
         {
             this.number = number;
-            this.up = up;
-            this.down = down;
-            this.left = left;
-            this.right = right;
+            this.x = x;
+            this.y = y;
             this.space = space;
             this.timestamp = timestamp;
         }
 
-        public Commands(int number, bool up, bool down, bool left, bool right, bool space)
+        public Commands(int number, float x, float y, bool space)
         {
             this.number = number;
-            this.up = up;
-            this.down = down;
-            this.left = left;
-            this.right = right;
+            this.x = x;
+            this.y = y;
             this.space = space;
         }
         
@@ -40,10 +37,8 @@ namespace custom.Utils
         public void Serialize(BitBuffer buffer)
         {
             buffer.PutInt(number);
-            buffer.PutBit(up);
-            buffer.PutBit(down);
-            buffer.PutBit(left);
-            buffer.PutBit(right);
+            buffer.PutFloat(x);
+            buffer.PutFloat(y);
             buffer.PutBit(space);
             
         }
@@ -51,27 +46,25 @@ namespace custom.Utils
         public void Deserialize(BitBuffer buffer)
         {
             number = buffer.GetInt();
-            up = buffer.GetBit();
-            down = buffer.GetBit();
-            left = buffer.GetBit();
-            right = buffer.GetBit();
+            x = buffer.GetFloat();
+            y = buffer.GetFloat();
             space = buffer.GetBit();
         }
 
-        public static Vector3 generateForce(Commands commands)
+        public static float generateTranslation(Commands commands)
         {
-            Vector3 force = Vector3.zero;
-            force += commands.space ? Vector3.up * 5 : Vector3.zero;
-            force += commands.up ? Vector3.forward * 2 : Vector3.zero;
-            force += commands.down ? Vector3.back * 2 : Vector3.zero;
-            force += commands.left ? Vector3.left * 2 : Vector3.zero;
-            force += commands.right ? Vector3.right * 2 : Vector3.zero;
-            return force;
+            return commands.y * Constants.speed * Time.deltaTime;
         }
+        
+        public static float generateStraffe(Commands commands)
+        {
+            return commands.x * Constants.speed * Time.deltaTime;
+        }
+
 
         public bool notNull()
         {
-            return down || up || right || left || space;
+            return x != 0f || y != 0f || space;
         }
     }
 }

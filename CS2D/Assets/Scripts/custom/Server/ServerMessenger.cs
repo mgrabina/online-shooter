@@ -28,7 +28,6 @@ namespace custom.Server
         {
             mb = new MessageBuilder(-1, Constants.server_base_port, Constants.clients_base_port,null);
             serverCubes = new List<CubeEntity>();
-
         }
 
         private void Update()
@@ -72,7 +71,9 @@ namespace custom.Server
             if (!players.Contains(new PlayerInfo(id, endPoint)))
             {
                 players.Add(new PlayerInfo(id, endPoint));
-                var serverCube = Instantiate(serverGameObject, new Vector3(Random.Range(-4, 4), 1, Random.Range(-4,4)), Quaternion.identity);
+                var serverCube = Instantiate(serverGameObject, 
+                    new Vector3(Random.Range(-4, 4), 0.25f, Random.Range(-4,4)), Quaternion.identity);
+                serverCube.layer = 8; // Server Layer
                 serverCubes.Add( new CubeEntity(serverCube, id) );
                 SendPlayerJoined(id);
                 SendInitStatus(id);
@@ -115,13 +116,12 @@ namespace custom.Server
             int n = -1;
             foreach (Commands commands in (message).Commands)
             {
-                Vector3 force = Commands.generateForce(commands);                        
-
                 foreach (var cube in serverCubes)
                 {
                     if (cube.Id.Equals(message.GetId))
                     {
-                        cube.GameObject.GetComponent<Rigidbody>().AddForceAtPosition(force, Vector3.zero, ForceMode.Impulse);
+                        cube.GameObject.GetComponent<CharacterController>().transform.Translate(
+                            Commands.generateStraffe(commands), 0, Commands.generateTranslation(commands));
                         cube.LastCommandProcessed = commands.number;
                         break;
                     }

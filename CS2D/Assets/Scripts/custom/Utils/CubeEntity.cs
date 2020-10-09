@@ -52,7 +52,7 @@ namespace custom.Utils
             CubeEntity founded = null;
             foreach(var c in entities)
             {
-                if (c.id == aux_id)
+                if (c.id.Equals(aux_id))
                 {
                     founded = c;
                     break;

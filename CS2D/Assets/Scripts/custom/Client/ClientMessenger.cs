@@ -24,7 +24,8 @@ namespace custom.Client
         private bool clientResponding = false, registered = false, connected = true, initialized = false;
         private float clientTime = 0f, accumulatedTime_c2 = 0f;
         private int packetNumber = 0, lastCommandLocallyExcecuted = 0;
-        private Rigidbody myRigidbody, concilliateRB;
+        private CharacterController myRigidbody;
+        private Transform concilliate;
         
         private void Start()
         {
@@ -35,6 +36,8 @@ namespace custom.Client
             {
                 register();
             }
+
+            concilliate = new GameObject().transform;
         }
 
         private void Update()
@@ -43,7 +46,7 @@ namespace custom.Client
             
             getAndProcessMessage();
 
-            if (Input.GetKeyDown(KeyCode.D))
+            if (Input.GetKeyDown(KeyCode.M))
             {
                 connected = !connected;
             }
@@ -116,8 +119,8 @@ namespace custom.Client
             if (idJoined == this.id)
             {
                 registered = true;
-                myRigidbody = clientCube.GetComponent<Rigidbody>();
-                concilliateRB = Rigidbody.Instantiate(myRigidbody);
+                myRigidbody = clientCube.GetComponent<CharacterController>();
+                setTransform(myRigidbody.transform.position, myRigidbody.transform.rotation, concilliate);
             }
         }
 
@@ -200,10 +203,8 @@ namespace custom.Client
         {
             var timeout = Time.time + 2;
             var command = new Commands(packetNumber++, 
-                Input.GetKeyDown(KeyCode.UpArrow), 
-                Input.GetKeyDown(KeyCode.DownArrow),
-                Input.GetKeyDown(KeyCode.LeftArrow),
-                Input.GetKeyDown(KeyCode.RightArrow),
+                Input.GetAxis("Horizontal"), 
+                Input.GetAxis("Vertical"),
                 Input.GetKeyDown(KeyCode.Space), timeout);
             if (command.notNull())
             {
@@ -222,8 +223,9 @@ namespace custom.Client
                 if (commands.number > lastCommandLocallyExcecuted)
                 {
                     lastCommandLocallyExcecuted = commands.number;
-                    Vector3 force = Commands.generateForce(commands);                        
-                    myRigidbody.AddForceAtPosition(force, Vector3.zero, ForceMode.Impulse);
+                    
+                    myRigidbody.transform.Translate(
+                        Commands.generateStraffe(commands), 0, Commands.generateTranslation(commands));
                 }
             }
         }
@@ -231,8 +233,7 @@ namespace custom.Client
         private void Concilliate()
         {
             CubeEntity lastFromServer = interpolationBuffer.Last().getEntityById(id);
-            concilliateRB.transform.position = lastFromServer.AuxPosition;
-            concilliateRB.transform.rotation = lastFromServer.AuxRotation;
+            setTransform(lastFromServer.AuxPosition, lastFromServer.AuxRotation, concilliate);
             int currentServerCommandExcecuted = lastFromServer.AuxLastCommandProcessed;
     
             foreach (var command in commands)    
@@ -240,13 +241,15 @@ namespace custom.Client
                 if (currentServerCommandExcecuted < command.number)
                 {
                     currentServerCommandExcecuted = command.number;
-                    Vector3 force = Commands.generateForce(command);
-                    concilliateRB.AddForceAtPosition(force, Vector3.zero, ForceMode.Impulse);
+                    
+                    concilliate.Translate(
+                        Commands.generateStraffe(command), 0, Commands.generateTranslation(command));
+                    
                 }
             }
 
-            myRigidbody.transform.position = concilliateRB.transform.position;
-            myRigidbody.transform.rotation = concilliateRB.transform.rotation;
+            myRigidbody.transform.position = concilliate.position;
+            myRigidbody.transform.rotation = concilliate.rotation;
         }
 
         private static int generate_id()
@@ -257,7 +260,7 @@ namespace custom.Client
         public GameObject createClient(int idJoined)
         {
             playerIds.Add(idJoined);
-            var clientCube = Instantiate(clientCubePrefab, new Vector3(0, 0.5f, 0), new Quaternion());
+            var clientCube = Instantiate(clientCubePrefab, new Vector3(0, 0.25f, 0), new Quaternion());
             clientCubes.Add(new CubeEntity(clientCube, idJoined));
             return clientCube;
         }
@@ -269,6 +272,12 @@ namespace custom.Client
         
         public void OnDestroy() {
             mb.Disconnect();
+        }
+
+        private void setTransform(Vector3 position, Quaternion rotation, Transform transform)
+        {
+            transform.position = new Vector3(position.x, position.y, position.z);
+            transform.rotation = new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
         }
     }
 }

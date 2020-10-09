@@ -1,6 +1,7 @@
 using System.Net;
 using custom.Server;
 using JetBrains.Annotations;
+using UnityEngine;
 
 namespace custom.Network
 {
@@ -17,6 +18,7 @@ namespace custom.Network
             _channel = new Channel(null, sourcePortBase, _channelPortD = destinationPortBase);
             this._gameMemberId = gameMemberId;
             this._destinationIP = destinationIp;
+            Debug.Log(gameMemberId);
         }
 
         

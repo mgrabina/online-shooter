@@ -14,10 +14,8 @@ namespace custom.Client
 	
 		// Update is called once per frame
 		void Update () {
-			playerInput.up = UnityEngine.Input.GetKey (KeyCode.W);
-			playerInput.down = UnityEngine.Input.GetKey (KeyCode.S);
-			playerInput.left = UnityEngine.Input.GetKey (KeyCode.A);
-			playerInput.right = UnityEngine.Input.GetKey (KeyCode.D);
+			playerInput.x = UnityEngine.Input.GetAxis("Horizontal");
+			playerInput.y = UnityEngine.Input.GetAxis("Vertical");
 			playerInput.shoot = UnityEngine.Input.GetKey (KeyCode.Space);
 		}
 

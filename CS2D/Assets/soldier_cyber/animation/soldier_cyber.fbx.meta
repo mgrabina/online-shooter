@@ -1,236 +1,84 @@
 fileFormatVersion: 2
-guid: c250fa4f5a3bc4722b6e7c43a8a492a3
+guid: 97d3749fddf0bd04cb85828608aa3b2b
 ModelImporter:
-  serializedVersion: 26
-  internalIDToNameTable:
-  - first:
-      1: 100000
-    second: Armature.015
-  - first:
-      1: 100002
-    second: basic_rig:Head
-  - first:
-      1: 100004
-    second: basic_rig:HeadTop_End
-  - first:
-      1: 100006
-    second: basic_rig:Hips
-  - first:
-      1: 100008
-    second: basic_rig:LeftArm
-  - first:
-      1: 100010
-    second: basic_rig:LeftFoot
-  - first:
-      1: 100012
-    second: basic_rig:LeftForeArm
-  - first:
-      1: 100014
-    second: basic_rig:LeftHand
-  - first:
-      1: 100016
-    second: basic_rig:LeftHandIndex1
-  - first:
-      1: 100018
-    second: basic_rig:LeftHandIndex2
-  - first:
-      1: 100020
-    second: basic_rig:LeftHandIndex3
-  - first:
-      1: 100022
-    second: basic_rig:LeftHandIndex4
-  - first:
-      1: 100024
-    second: basic_rig:LeftLeg
-  - first:
-      1: 100026
-    second: basic_rig:LeftShoulder
-  - first:
-      1: 100028
-    second: basic_rig:LeftToe_End
-  - first:
-      1: 100030
-    second: basic_rig:LeftToeBase
-  - first:
-      1: 100032
-    second: basic_rig:LeftUpLeg
-  - first:
-      1: 100034
-    second: basic_rig:Neck
-  - first:
-      1: 100036
-    second: basic_rig:RightArm
-  - first:
-      1: 100038
-    second: basic_rig:RightFoot
-  - first:
-      1: 100040
-    second: basic_rig:RightForeArm
-  - first:
-      1: 100042
-    second: basic_rig:RightHand
-  - first:
-      1: 100044
-    second: basic_rig:RightHandIndex1
-  - first:
-      1: 100046
-    second: basic_rig:RightHandIndex2
-  - first:
-      1: 100048
-    second: basic_rig:RightHandIndex3
-  - first:
-      1: 100050
-    second: basic_rig:RightHandIndex4
-  - first:
-      1: 100052
-    second: basic_rig:RightLeg
-  - first:
-      1: 100054
-    second: basic_rig:RightShoulder
-  - first:
-      1: 100056
-    second: basic_rig:RightToe_End
-  - first:
-      1: 100058
-    second: basic_rig:RightToeBase
-  - first:
-      1: 100060
-    second: basic_rig:RightUpLeg
-  - first:
-      1: 100062
-    second: basic_rig:Spine
-  - first:
-      1: 100064
-    second: basic_rig:Spine1
-  - first:
-      1: 100066
-    second: basic_rig:Spine2
-  - first:
-      1: 100068
-    second: //RootNode
-  - first:
-      1: 100070
-    second: soldier_cyber.002
-  - first:
-      4: 400000
-    second: Armature.015
-  - first:
-      4: 400002
-    second: basic_rig:Head
-  - first:
-      4: 400004
-    second: basic_rig:HeadTop_End
-  - first:
-      4: 400006
-    second: basic_rig:Hips
-  - first:
-      4: 400008
-    second: basic_rig:LeftArm
-  - first:
-      4: 400010
-    second: basic_rig:LeftFoot
-  - first:
-      4: 400012
-    second: basic_rig:LeftForeArm
-  - first:
-      4: 400014
-    second: basic_rig:LeftHand
-  - first:
-      4: 400016
-    second: basic_rig:LeftHandIndex1
-  - first:
-      4: 400018
-    second: basic_rig:LeftHandIndex2
-  - first:
-      4: 400020
-    second: basic_rig:LeftHandIndex3
-  - first:
-      4: 400022
-    second: basic_rig:LeftHandIndex4
-  - first:
-      4: 400024
-    second: basic_rig:LeftLeg
-  - first:
-      4: 400026
-    second: basic_rig:LeftShoulder
-  - first:
-      4: 400028
-    second: basic_rig:LeftToe_End
-  - first:
-      4: 400030
-    second: basic_rig:LeftToeBase
-  - first:
-      4: 400032
-    second: basic_rig:LeftUpLeg
-  - first:
-      4: 400034
-    second: basic_rig:Neck
-  - first:
-      4: 400036
-    second: basic_rig:RightArm
-  - first:
-      4: 400038
-    second: basic_rig:RightFoot
-  - first:
-      4: 400040
-    second: basic_rig:RightForeArm
-  - first:
-      4: 400042
-    second: basic_rig:RightHand
-  - first:
-      4: 400044
-    second: basic_rig:RightHandIndex1
-  - first:
-      4: 400046
-    second: basic_rig:RightHandIndex2
-  - first:
-      4: 400048
-    second: basic_rig:RightHandIndex3
-  - first:
-      4: 400050
-    second: basic_rig:RightHandIndex4
-  - first:
-      4: 400052
-    second: basic_rig:RightLeg
-  - first:
-      4: 400054
-    second: basic_rig:RightShoulder
-  - first:
-      4: 400056
-    second: basic_rig:RightToe_End
-  - first:
-      4: 400058
-    second: basic_rig:RightToeBase
-  - first:
-      4: 400060
-    second: basic_rig:RightUpLeg
-  - first:
-      4: 400062
-    second: basic_rig:Spine
-  - first:
-      4: 400064
-    second: basic_rig:Spine1
-  - first:
-      4: 400066
-    second: basic_rig:Spine2
-  - first:
-      4: 400068
-    second: //RootNode
-  - first:
-      4: 400070
-    second: soldier_cyber.002
-  - first:
-      21: 2100000
-    second: No Name
-  - first:
-      43: 4300000
-    second: soldier_cyber.002
-  - first:
-      95: 9500000
-    second: //RootNode
-  - first:
-      137: 13700000
-    second: soldier_cyber.002
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: Armature.015
+    100002: basic_rig:Head
+    100004: basic_rig:HeadTop_End
+    100006: basic_rig:Hips
+    100008: basic_rig:LeftArm
+    100010: basic_rig:LeftFoot
+    100012: basic_rig:LeftForeArm
+    100014: basic_rig:LeftHand
+    100016: basic_rig:LeftHandIndex1
+    100018: basic_rig:LeftHandIndex2
+    100020: basic_rig:LeftHandIndex3
+    100022: basic_rig:LeftHandIndex4
+    100024: basic_rig:LeftLeg
+    100026: basic_rig:LeftShoulder
+    100028: basic_rig:LeftToe_End
+    100030: basic_rig:LeftToeBase
+    100032: basic_rig:LeftUpLeg
+    100034: basic_rig:Neck
+    100036: basic_rig:RightArm
+    100038: basic_rig:RightFoot
+    100040: basic_rig:RightForeArm
+    100042: basic_rig:RightHand
+    100044: basic_rig:RightHandIndex1
+    100046: basic_rig:RightHandIndex2
+    100048: basic_rig:RightHandIndex3
+    100050: basic_rig:RightHandIndex4
+    100052: basic_rig:RightLeg
+    100054: basic_rig:RightShoulder
+    100056: basic_rig:RightToe_End
+    100058: basic_rig:RightToeBase
+    100060: basic_rig:RightUpLeg
+    100062: basic_rig:Spine
+    100064: basic_rig:Spine1
+    100066: basic_rig:Spine2
+    100068: //RootNode
+    100070: soldier_cyber.002
+    400000: Armature.015
+    400002: basic_rig:Head
+    400004: basic_rig:HeadTop_End
+    400006: basic_rig:Hips
+    400008: basic_rig:LeftArm
+    400010: basic_rig:LeftFoot
+    400012: basic_rig:LeftForeArm
+    400014: basic_rig:LeftHand
+    400016: basic_rig:LeftHandIndex1
+    400018: basic_rig:LeftHandIndex2
+    400020: basic_rig:LeftHandIndex3
+    400022: basic_rig:LeftHandIndex4
+    400024: basic_rig:LeftLeg
+    400026: basic_rig:LeftShoulder
+    400028: basic_rig:LeftToe_End
+    400030: basic_rig:LeftToeBase
+    400032: basic_rig:LeftUpLeg
+    400034: basic_rig:Neck
+    400036: basic_rig:RightArm
+    400038: basic_rig:RightFoot
+    400040: basic_rig:RightForeArm
+    400042: basic_rig:RightHand
+    400044: basic_rig:RightHandIndex1
+    400046: basic_rig:RightHandIndex2
+    400048: basic_rig:RightHandIndex3
+    400050: basic_rig:RightHandIndex4
+    400052: basic_rig:RightLeg
+    400054: basic_rig:RightShoulder
+    400056: basic_rig:RightToe_End
+    400058: basic_rig:RightToeBase
+    400060: basic_rig:RightUpLeg
+    400062: basic_rig:Spine
+    400064: basic_rig:Spine1
+    400066: basic_rig:Spine2
+    400068: //RootNode
+    400070: soldier_cyber.002
+    2100000: No Name
+    4300000: soldier_cyber.002
+    9500000: //RootNode
+    13700000: soldier_cyber.002
   externalObjects: {}
   materials:
     importMaterials: 0
@@ -266,7 +114,6 @@ ModelImporter:
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
-    sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -274,19 +121,18 @@ ModelImporter:
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
+    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
     preserveHierarchy: 0
-    skinWeightsMode: 0
-    maxBonesPerVertex: 4
-    minBoneWeight: 0.001
-    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
     useFileScale: 1
+    previousCalculatedGlobalScale: 0.01
+    hasPreviousCalculatedGlobalScale: 1
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -295,11 +141,10 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
-  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
-    serializedVersion: 3
+    serializedVersion: 2
     human:
     - boneName: basic_rig:Hips
       humanName: Hips
@@ -717,7 +562,6 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 1

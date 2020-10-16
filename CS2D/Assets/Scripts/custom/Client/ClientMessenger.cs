@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using custom.Network;
 using custom.Utils;
 using UnityEngine;
+using Camera = UnityEngine.Camera;
+using Random = UnityEngine.Random;
 
 namespace custom.Client
 {
@@ -12,13 +15,13 @@ namespace custom.Client
     
         // Networking
         [SerializeField] private GameObject clientCubePrefab;
+        private Animator _animator;
         private HashSet<int> playerIds = new HashSet<int>();
         private List<CubeEntity> clientCubes;
         private List<Commands> commands = new List<Commands>();
         private List<Snapshot> interpolationBuffer = new List<Snapshot>();
         private MessageBuilder mb;
 
-        
         // State Params
         public int id;
         private bool clientResponding = false, registered = false, connected = true, initialized = false;
@@ -42,7 +45,6 @@ namespace custom.Client
 
         private void Update()
         {
-            accumulatedTime_c2 += Time.deltaTime;
             
             getAndProcessMessage();
 
@@ -53,13 +55,22 @@ namespace custom.Client
             
             if (registered && connected)
             {
-                ReadInput();
-
-                Predict();
-                
-                sendCommands();
-        
                 updateServerVisualization();
+            }
+        }
+
+        private void FixedUpdate()
+        {
+            clientTime += Time.deltaTime;
+            accumulatedTime_c2 += Time.deltaTime;
+
+            if (clientResponding)
+            {
+                ReadInput();
+                Predict();
+                sendCommands();
+                Interpolate();
+                Concilliate();
             }
         }
 
@@ -121,6 +132,12 @@ namespace custom.Client
                 registered = true;
                 myRigidbody = clientCube.GetComponent<CharacterController>();
                 setTransform(myRigidbody.transform.position, myRigidbody.transform.rotation, concilliate);
+                this._animator = clientCube.GetComponent<Animator>();
+                clientCube.GetComponentInChildren<Camera>().tag = "MasterClient";
+            }
+            else
+            {
+                clientCube.GetComponentInChildren<Camera>().tag = "SecondaryClient";
             }
         }
 
@@ -137,8 +154,6 @@ namespace custom.Client
             {
                 interpolationBuffer.Add(snapshot);
             }
-
-            Concilliate();
         }
         
         private void updateServerVisualization()
@@ -151,12 +166,6 @@ namespace custom.Client
             else if (interpolationBuffer.Count <= 1)
             {
                 clientResponding = false;
-            }
-
-            if (clientResponding)
-            {
-                clientTime += Time.deltaTime;
-                Interpolate();
             }
         }
 
@@ -226,6 +235,10 @@ namespace custom.Client
                     
                     myRigidbody.transform.Translate(
                         Commands.generateStraffe(commands), 0, Commands.generateTranslation(commands));
+                    if (!_animator.GetCurrentAnimatorStateInfo(1).IsName("Walking"))
+                    {
+                        _animator.SetTrigger("Walk");   
+                    }
                 }
             }
         }
@@ -260,7 +273,7 @@ namespace custom.Client
         public GameObject createClient(int idJoined)
         {
             playerIds.Add(idJoined);
-            var clientCube = Instantiate(clientCubePrefab, new Vector3(0, 0.25f, 0), new Quaternion());
+            var clientCube = Instantiate(clientCubePrefab, new Vector3(0, 1f, 0), new Quaternion());
             clientCubes.Add(new CubeEntity(clientCube, idJoined));
             return clientCube;
         }

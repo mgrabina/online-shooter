@@ -32,14 +32,17 @@ namespace custom.Server
 
         private void Update()
         {
-            accumulatedTime_c1 += Time.deltaTime;
-            
             if (Input.GetKeyDown(KeyCode.D)) {
                 online = !online;
             }
 
             getAndProcessMessage();
+        }
 
+        public void FixedUpdate()
+        {
+            accumulatedTime_c1 += Time.deltaTime;
+   
             if (online)
             {
                 SendUpdates();
@@ -72,7 +75,7 @@ namespace custom.Server
             {
                 players.Add(new PlayerInfo(id, endPoint));
                 var serverCube = Instantiate(serverGameObject, 
-                    new Vector3(Random.Range(-4, 4), 0.25f, Random.Range(-4,4)), Quaternion.identity);
+                    new Vector3(Random.Range(-4, 4), 1f, Random.Range(-4,4)), Quaternion.identity);
                 serverCube.layer = 8; // Server Layer
                 serverCubes.Add( new CubeEntity(serverCube, id) );
                 SendPlayerJoined(id);

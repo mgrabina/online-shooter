@@ -18,19 +18,32 @@ namespace custom.Utils
         public GameObject main;
 
         private bool following = true;
+        private bool camera_cheked = false;
+        
         
         // Use this for initialization
         void Start () {
             character = this.transform.parent.gameObject;
-            if (!Master.serverMode)
-            {
-                this.GetComponent<UnityEngine.Camera>().enabled = true;
-                // this.gameObject.tag = "MainCamera";
-            }
+            this.GetComponent<UnityEngine.Camera>().enabled = false;
         }
 	
         // Update is called once per frame
         void Update () {
+            if (this.tag.Equals("MasterClient") && !camera_cheked)
+            {
+                // this.GetComponent<UnityEngine.Camera>().enabled = true;
+                this.GetComponent<UnityEngine.Camera>().enabled = false;
+            }
+            else if (!camera_cheked)
+            {
+                this.GetComponent<UnityEngine.Camera>().enabled = false;
+            }
+
+            if (!camera_cheked && !this.tag.Equals("Untagged"))
+            {
+                camera_cheked = true;
+            }
+            
             if (Input.GetKey(KeyCode.F))
             {
                 following = !following;

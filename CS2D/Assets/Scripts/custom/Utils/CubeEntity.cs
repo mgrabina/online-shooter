@@ -61,7 +61,7 @@ namespace custom.Utils
 
             if (founded == null)
             {
-                this.gameObject = cm.createClient(aux_id);
+                this.gameObject = cm.createClient(aux_id, false);
                 this.id = aux_id;
             }
             else

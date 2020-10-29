@@ -28,6 +28,7 @@ namespace custom.Server
         {
             mb = new MessageBuilder(-1, Constants.server_base_port, Constants.clients_base_port,null);
             serverCubes = new List<CubeEntity>();
+            Debug.Log("Server Running");
         }
 
         private void Update()
@@ -76,14 +77,33 @@ namespace custom.Server
                 players.Add(new PlayerInfo(id, endPoint));
                 var serverCube = Instantiate(serverGameObject, 
                     new Vector3(Random.Range(-4, 4), 1f, Random.Range(-4,4)), Quaternion.identity);
-                serverCube.layer = 8; // Server Layer
+                // serverCube.layer = 8; // Server Layer
+                SetLayerRecursively(serverCube, 8);
                 serverCubes.Add( new CubeEntity(serverCube, id) );
                 SendPlayerJoined(id);
                 SendInitStatus(id);
             }
             
         }
-
+        void SetLayerRecursively(GameObject obj, int newLayer)
+        {
+            if (null == obj)
+            {
+                return;
+            }
+       
+            obj.layer = newLayer;
+       
+            foreach (Transform child in obj.transform)
+            {
+                if (null == child)
+                {
+                    continue;
+                }
+                SetLayerRecursively(child.gameObject, newLayer);
+            }
+        }
+        
         public void SendInitStatus(int id)
         {
             PlayerInfo pi = GetPlayerById(id);

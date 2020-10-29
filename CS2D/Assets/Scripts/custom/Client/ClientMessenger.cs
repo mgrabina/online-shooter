@@ -14,7 +14,8 @@ namespace custom.Client
     {
     
         // Networking
-        [SerializeField] private GameObject clientCubePrefab;
+        [SerializeField] private GameObject clientCubePrefab3p;
+        [SerializeField] private GameObject clientCubePrefab1p;
         private Animator _animator;
         private HashSet<int> playerIds = new HashSet<int>();
         private List<CubeEntity> clientCubes;
@@ -126,7 +127,7 @@ namespace custom.Client
             {
                 return;
             }
-            GameObject clientCube = createClient(idJoined);
+            GameObject clientCube = createClient(idJoined, idJoined == this.id);
             if (idJoined == this.id)
             {
                 registered = true;
@@ -270,10 +271,19 @@ namespace custom.Client
             return Random.Range(0, 100);
         }
 
-        public GameObject createClient(int idJoined)
+        public GameObject createClient(int idJoined, bool me)
         {
             playerIds.Add(idJoined);
-            var clientCube = Instantiate(clientCubePrefab, new Vector3(0, 1f, 0), new Quaternion());
+            GameObject clientCube;
+            if (me)
+            {
+                clientCube = Instantiate(clientCubePrefab1p, new Vector3(0, 1f, 0), new Quaternion());
+            }
+            else
+            {
+                clientCube = Instantiate(clientCubePrefab3p, new Vector3(0, 1f, 0), new Quaternion());
+            }
+            
             clientCubes.Add(new CubeEntity(clientCube, idJoined));
             return clientCube;
         }

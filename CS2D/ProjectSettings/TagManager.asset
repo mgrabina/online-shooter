@@ -7,6 +7,11 @@ TagManager:
   - Food
   - MasterClient
   - SecondaryClient
+  - SecondCamera
+  - BulletSpawn
+  - Weapon
+  - LevelPart
+  - Dummie
   layers:
   - Default
   - TransparentFX
@@ -18,10 +23,10 @@ TagManager:
   - 
   - Server Layer
   - Client Layer
+  - Secondary
+  - Weapon
   - 
-  - 
-  - 
-  - 
+  - BulletSpawn
   - 
   - 
   - 

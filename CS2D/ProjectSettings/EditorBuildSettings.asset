@@ -8,4 +8,10 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Scene/Menu.unity
+    guid: 1b7fd85a03f0e4d99be5dfe6e4a6521e
+  - enabled: 1
+    path: Assets/Scene/Warzone.unity
+    guid: 0dd91d20abc56a94d8f1730f74252c53
   m_configObjects: {}

@@ -12,7 +12,7 @@ namespace custom
         public static class MasterData
         {
             public static Text serverTitle;
-    
+            public static string ip = "";
             private static float floorLimit = 4f;
             public static bool serverCreated = false;
             public static bool clientCreated = false;
@@ -34,6 +34,7 @@ namespace custom
 
             public static void setClient(string address, GameObject shadowClientGO)
             {
+                ip = address;
                 SceneManager.LoadScene("Warzone");
                 Instantiate(shadowClientGO,
                     new Vector3(Random.Range(-floorLimit, floorLimit), Random.Range(1f, 3f),

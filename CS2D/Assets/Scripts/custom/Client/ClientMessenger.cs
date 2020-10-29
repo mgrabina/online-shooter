@@ -34,7 +34,7 @@ namespace custom.Client
         private void Start()
         {
             id = generate_id();
-            mb = new MessageBuilder(id, Constants.clients_base_port + id*10, Constants.server_base_port, Constants.serverIP);
+            mb = new MessageBuilder(id, Constants.clients_base_port + id*10, Constants.server_base_port, MasterBehavior.MasterData.ip);
             clientCubes = new List<CubeEntity>();
             if (!registered)
             {

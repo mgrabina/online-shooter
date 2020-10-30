@@ -28,6 +28,7 @@ namespace custom.Network
         
         public JoinGameMessage GenerateJoinGameMessage(int id)
         {
+            Debug.Log("Sending join game to " + _destinationIP + " " + _channelPortD);
             return new JoinGameMessage(id, _channel, _destinationIP, _channelPortD);
         }
 
@@ -63,6 +64,10 @@ namespace custom.Network
         public Message GETChannelMessage()
         {
             Packet packet = _channel.GetPacket();
+            if (packet != null)
+            {
+                Debug.Log(packet.fromEndPoint.Address.MapToIPv4().ToString());
+            }
             return packet != null ? Message.getMessage(packet) : null;
         }
 

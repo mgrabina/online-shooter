@@ -1,6 +1,5 @@
 using System;
 using System.Net;
-using UnityEngine;
 
 namespace custom.Network
 {
@@ -36,16 +35,7 @@ namespace custom.Network
         public void Send()
         {
             packet.buffer.Flush();
-            if (id == -1)
-            {
-                channel.Send(packet, new IPEndPoint(IPAddress.Parse(destinationIp), destinationPort));
-                Debug.Log("Send to " + destinationIp + " " + destinationPort);
-            }
-            else
-            {
-                channel.Send(packet);
-            }
-
+            channel.Send(packet, new IPEndPoint(IPAddress.Parse(destinationIp), destinationPort));
             packet.Free();
         }
 

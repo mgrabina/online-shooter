@@ -29,7 +29,6 @@ namespace custom.Server
             mb = new MessageBuilder(-1, Constants.server_base_port, Constants.clients_base_port, Constants.serverIP);
             online = true;
             serverCubes = new List<CubeEntity>();
-            Debug.Log("Server Running");
         }
 
         private void Update()

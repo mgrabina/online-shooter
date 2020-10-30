@@ -16,7 +16,7 @@ namespace custom.Network
         public MessageBuilder(int gameMemberId, int sourcePortBase, int destinationPortBase, string destinationIp)
         {
             Debug.Log("Connecting to " + destinationIp + " " + destinationPortBase);
-            _channel = new Channel(destinationIp, sourcePortBase, destinationPortBase);
+            _channel = new Channel(sourcePortBase);
             this._gameMemberId = gameMemberId;
             this._channelPortD = destinationPortBase;
             this._destinationIP = destinationIp;

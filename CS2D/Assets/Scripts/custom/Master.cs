@@ -54,9 +54,11 @@ namespace custom
                     new Vector3(Random.Range(-floorLimit, floorLimit), Random.Range(1f, 3f),
                         Random.Range(-floorLimit, floorLimit)),
                     new Quaternion());
+                Destroy(GameObject.Find("ServerCamera"));
                 Debug.Log("Client Mode");
                 serverMode = false;
                 clientCreated = true;
+                // 192.168.68.104
             }
         }
 

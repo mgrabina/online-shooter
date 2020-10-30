@@ -16,6 +16,7 @@ namespace custom.Client
         // Networking
         [SerializeField] private GameObject clientCubePrefab3p;
         [SerializeField] private GameObject clientCubePrefab1p;
+        private Transform camera;
         private Animator _animator;
         private HashSet<int> playerIds = new HashSet<int>();
         private List<CubeEntity> clientCubes;
@@ -213,8 +214,8 @@ namespace custom.Client
         {
             var timeout = Time.time + 2;
             var command = new Commands(packetNumber++, 
-                Input.GetAxis("Horizontal"), 
-                Input.GetAxis("Vertical"),
+                Input.GetAxis("Horizontal")  * camera.transform.right.magnitude, 
+                Input.GetAxis("Vertical") * camera.transform.forward.magnitude,
                 Input.GetKeyDown(KeyCode.Space), timeout);
             if (command.notNull())
             {
@@ -277,11 +278,13 @@ namespace custom.Client
             GameObject clientCube;
             if (me)
             {
-                clientCube = Instantiate(clientCubePrefab1p, new Vector3(0, 1f, 0), new Quaternion());
+                clientCube = Instantiate(clientCubePrefab1p, new Vector3(0, 0.2f, 0), new Quaternion());
+                camera = clientCube.transform.Find("Main Camera");
             }
             else
             {
-                clientCube = Instantiate(clientCubePrefab3p, new Vector3(0, 1f, 0), new Quaternion());
+                Debug.Log(idJoined);
+                clientCube = Instantiate(clientCubePrefab3p, new Vector3(0, 0.2f, 0), new Quaternion());
             }
             
             clientCubes.Add(new CubeEntity(clientCube, idJoined));

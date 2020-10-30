@@ -4,7 +4,6 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Food
   - MasterClient
   - SecondaryClient
   - SecondCamera
@@ -25,7 +24,7 @@ TagManager:
   - Client Layer
   - Secondary
   - Weapon
-  - 
+  - Player
   - BulletSpawn
   - 
   - 

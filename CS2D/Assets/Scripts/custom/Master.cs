@@ -18,10 +18,27 @@ namespace custom
             public static bool clientCreated = false;
             public static bool serverMode = false;
 
+            private static GameObject client;
+            private static GameObject server;
+                
             public static void setServer(GameObject shadowServerGO)
             {
+                server = shadowServerGO;
                 SceneManager.LoadScene("Warzone");
-                Instantiate(shadowServerGO,
+                UnityEngine.SceneManagement.SceneManager.activeSceneChanged += OnSceneWasLoadedServer;
+            }
+
+            public static void setClient(string address, GameObject shadowClientGO)
+            {
+                client = shadowClientGO;
+                ip = address;
+                SceneManager.LoadScene("Warzone");
+                UnityEngine.SceneManagement.SceneManager.activeSceneChanged += OnSceneWasLoadedClient;
+                // serverTitle.text = "SOLDIER";
+            }
+            
+            public static void OnSceneWasLoadedServer (UnityEngine.SceneManagement.Scene from, UnityEngine.SceneManagement.Scene to) {
+                Instantiate(server,
                     new Vector3(Random.Range(-floorLimit, floorLimit), Random.Range(1f, 3f),
                         Random.Range(-floorLimit, floorLimit)),
                     new Quaternion());
@@ -31,20 +48,18 @@ namespace custom
                 serverMode = true;
                 serverCreated = true;
             }
-
-            public static void setClient(string address, GameObject shadowClientGO)
-            {
-                ip = address;
-                SceneManager.LoadScene("Warzone");
-                Instantiate(shadowClientGO,
+            
+            public static void OnSceneWasLoadedClient (UnityEngine.SceneManagement.Scene from, UnityEngine.SceneManagement.Scene to) {
+                Instantiate(client,
                     new Vector3(Random.Range(-floorLimit, floorLimit), Random.Range(1f, 3f),
                         Random.Range(-floorLimit, floorLimit)),
                     new Quaternion());
                 Debug.Log("Client Mode");
                 serverMode = false;
                 clientCreated = true;
-                // serverTitle.text = "SOLDIER";
             }
         }
+
+        
     }
 }

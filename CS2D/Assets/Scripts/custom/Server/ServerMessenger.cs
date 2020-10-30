@@ -18,15 +18,16 @@ namespace custom.Server
         private float accumulatedTime_c1 = 0f;
         private int packetNumber = 0;
 
-        private bool online = true;
+        private bool online = false;
         
         private MessageBuilder mb;
         public GameObject serverGameObject;
 
         
-        private void Start()
+        private void Awake()
         {
             mb = new MessageBuilder(-1, Constants.server_base_port, Constants.clients_base_port, Constants.serverIP);
+            online = true;
             serverCubes = new List<CubeEntity>();
             Debug.Log("Server Running");
         }
@@ -37,14 +38,17 @@ namespace custom.Server
                 online = !online;
             }
 
-            getAndProcessMessage();
+            if (online)
+            {
+                getAndProcessMessage();
+            }
         }
 
         public void FixedUpdate()
         {
             accumulatedTime_c1 += Time.deltaTime;
    
-            if (online)
+            if (online && players.Count > 0)
             {
                 SendUpdates();
             }

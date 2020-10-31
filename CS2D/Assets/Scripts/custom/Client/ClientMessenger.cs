@@ -213,10 +213,13 @@ namespace custom.Client
         private void ReadInput()
         {
             var timeout = Time.time + 2;
-            var command = new Commands(packetNumber++, 
-                Input.GetAxis("Horizontal")  * camera.transform.right.magnitude, 
-                Input.GetAxis("Vertical") * camera.transform.forward.magnitude,
-                Input.GetKeyDown(KeyCode.Space), timeout);
+            var command = new Commands(packetNumber++,
+                Input.GetAxis("Horizontal"),
+                Input.GetAxis("Vertical"),
+                Input.GetKeyDown(KeyCode.Space), 
+                timeout,                
+                Input.GetAxis("Mouse X")
+            );
             if (command.notNull())
             {
                 commands.Add(command);

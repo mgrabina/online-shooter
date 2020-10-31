@@ -17,6 +17,7 @@ namespace custom.Server
         
         private float accumulatedTime_c1 = 0f;
         private int packetNumber = 0;
+        private float mouseSensibility = 6;
 
         private bool online = false;
         
@@ -146,8 +147,15 @@ namespace custom.Server
                 {
                     if (cube.Id.Equals(message.GetId))
                     {
-                        cube.GameObject.GetComponent<CharacterController>().transform.Translate(
-                            Commands.generateStraffe(commands), 0, Commands.generateTranslation(commands));
+                        // cube.GameObject.GetComponent<CharacterController>().transform.Translate(
+                        //     Commands.generateStraffe(commands), 0, Commands.generateTranslation(commands));
+                        
+                        Vector3 move = cube.GameObject.transform.forward * commands.y 
+                                       + cube.GameObject.transform.right * commands.x; 
+                        cube.GameObject.GetComponent<CharacterController>().
+                            Move(Constants.speed * Time.deltaTime * move);
+                        cube.GameObject.transform.Rotate(0, commands.mouse_x * mouseSensibility, 0);
+
                         cube.LastCommandProcessed = commands.number;
                         break;
                     }

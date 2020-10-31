@@ -9,26 +9,20 @@ namespace custom.Utils
         public int number;
         public bool space;
         public float x, y;
+        public float mouse_x;
         public float timestamp;
 
 
-        public Commands(int number, float x, float y, bool space, float timestamp)
+        public Commands(int number, float x, float y, bool space, float timestamp, float mouseX)
         {
             this.number = number;
             this.x = x;
             this.y = y;
             this.space = space;
             this.timestamp = timestamp;
+            this.mouse_x = mouseX;
         }
 
-        public Commands(int number, float x, float y, bool space)
-        {
-            this.number = number;
-            this.x = x;
-            this.y = y;
-            this.space = space;
-        }
-        
         public Commands()
         {
         }
@@ -39,6 +33,7 @@ namespace custom.Utils
             buffer.PutInt(number);
             buffer.PutFloat(x);
             buffer.PutFloat(y);
+            buffer.PutFloat(mouse_x);
             buffer.PutBit(space);
             
         }
@@ -48,6 +43,7 @@ namespace custom.Utils
             number = buffer.GetInt();
             x = buffer.GetFloat();
             y = buffer.GetFloat();
+            mouse_x = buffer.GetFloat();
             space = buffer.GetBit();
         }
 

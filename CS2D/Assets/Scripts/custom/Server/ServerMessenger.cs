@@ -76,11 +76,20 @@ namespace custom.Server
         private void newHittedPlayer(HitEnemyMessage message)
         {
             int id = message.GetId;
+            Debug.Log("hitted " + id);
             foreach (CubeEntity player in serverCubes)
             {
                 if (player.Id.Equals(id))
                 {
                     player.decrementHealth();
+                    if (!player.isAlive())
+                    {
+                        Debug.Log("Player " + id + "died");
+                        Destroy(player.GameObject);
+                        serverCubes.Remove(player);
+                        players.Remove(new PlayerInfo(id, null));
+                    }
+                    Debug.Log(player.Health);
                 }
             }
         }

@@ -142,20 +142,20 @@ namespace custom.Utils
 
         public void incrementHealth()
         {
-            if (this.health*Constants.health_increment_percentage <= 1)
+            if (this.health+ this.health*Constants.health_increment_percentage <= 1)
             {
-                this.health *= Constants.health_increment_percentage;
+                this.health += this.health * Constants.health_increment_percentage;
+                Debug.Log(id + " " + " new health " + health);
             }
-            Debug.Log(id + " " + " new health " + health);
         }
         
         public void decrementHealth()
         {
-            if (this.health*Constants.health_decrement_percentage >= 0)
+            if (this.health - this.health*Constants.health_decrement_percentage >= 0)
             {
-                this.health *= Constants.health_decrement_percentage;
+                this.health -= this.health*Constants.health_decrement_percentage;
+                Debug.Log(id + " " + " new health " + health);
             }
-            Debug.Log(id + " " + " new health " + health);
         }
 
         public bool isAlive()

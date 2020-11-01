@@ -328,6 +328,7 @@ namespace custom.Client
             if (!me)
             {
                 clientCube.transform.Find("Cube").GetComponent<HealthSignal>().id = idJoined;
+                clientCube.transform.Find("Cube").GetComponent<HealthSignal>().cm = this;
             }
             clientCubes.Add(newCubeEntity);
             return clientCube;

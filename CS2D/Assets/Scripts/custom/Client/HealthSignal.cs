@@ -11,24 +11,21 @@ public class HealthSignal : MonoBehaviour
 {
     private MeshRenderer mesh;
     public Material black, red, yellow, green;
-    private Messenger cm;
+    public Messenger cm;
     public int id;
     
     void Start()
     {
         mesh = this.gameObject.GetComponent<MeshRenderer>();
-        if (MasterBehavior.MasterData.serverMode)
-        {
-            cm = GameObject.Find("ShadowServer").GetComponent<ServerMessenger>();
-        }
-        else
-        {
-            cm = GameObject.Find("ShadowClient").GetComponent<ClientMessenger>();
-        }
     }
 
     void Update()
     {
+        if (cm == null)
+        {
+            Debug.Log("Error");
+            return;
+        }
         float lastHealth = cm.getCurrentHealth(id);
         Debug.Log(id + " " + lastHealth);
         if (lastHealth < 0.2f)

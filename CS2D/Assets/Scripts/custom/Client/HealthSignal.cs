@@ -17,16 +17,16 @@ public class HealthSignal : MonoBehaviour
     void Update()
     {
         float lastHealth = CubeEntity.Health;
-        // Debug.Log(CubeEntity.Id + " " + CubeEntity.Health);
-        if (lastHealth < 0.2)
+        Debug.Log(CubeEntity.Id + " " + CubeEntity.Health);
+        if (lastHealth < 0.2f)
         {
             mesh.material = black;
         } 
-        else if (lastHealth < 0.4)
+        else if (lastHealth < 0.4f)
         {
             mesh.material = red;
         }
-        else if (lastHealth < 0.7)
+        else if (lastHealth < 0.7f)
         {
             mesh.material = yellow;
         }

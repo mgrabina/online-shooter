@@ -97,7 +97,9 @@ namespace custom.Server
                     new Vector3(Random.Range(-4, 4), 1f, Random.Range(-4,4)), Quaternion.identity);
                 // serverCube.layer = 8; // Server Layer
                 SetLayerRecursively(serverCube, 8);
-                serverCubes.Add( new CubeEntity(serverCube, id) );
+                CubeEntity newcube = new CubeEntity(serverCube, id);
+                serverCube.transform.Find("Cube").GetComponent<HealthSignal>().CubeEntity = newcube;
+                serverCubes.Add( newcube );
                 SendPlayerJoined(id);
                 SendInitStatus(id);
             }

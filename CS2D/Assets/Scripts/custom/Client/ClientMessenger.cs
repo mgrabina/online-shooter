@@ -258,10 +258,10 @@ namespace custom.Client
                     // myRigidbody.transform.Translate(
                     //     Commands.generateStraffe(commands), 0, Commands.generateTranslation(commands));
 
-                    if (!_animator.GetCurrentAnimatorStateInfo(1).IsName("Walking"))
-                    {
-                        // _animator.SetTrigger("Walk");   
-                    }
+                    // if (!_animator.GetCurrentAnimatorStateInfo(1).IsName("Walking"))
+                    // {
+                    //     // _animator.SetTrigger("Walk");   
+                    // }
                 }
             }
         }

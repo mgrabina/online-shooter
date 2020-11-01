@@ -15,7 +15,7 @@
         public static float sendRate = 1f / pps;
         
         public static float speed = 3;
-        public static float mouseSensibility = 6;
+        public static float mouseSensibility = 0.3f;
         public static float rotationSpeed = 1.0f;
 
         public static float health_increment_percentage = 1.01f;

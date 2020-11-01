@@ -64,6 +64,7 @@ namespace custom.Server
                 {
                     return;
                 }
+                Debug.Log(message.GetType);
                 switch (message.GetType)
                 {
                     case Message.Type.JOIN_GAME: processJoinGame((JoinGameMessage) message); break;

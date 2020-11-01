@@ -252,16 +252,6 @@ namespace custom.Client
                     myRigidbody.gameObject.transform.Rotate(0, commands.mouse_x * Constants.mouseSensibility, 0);
 
                     myRigidbody.transform.Find("Main Camera").transform.rotation = myRigidbody.transform.rotation;
-
-                    
-                    
-                    // myRigidbody.transform.Translate(
-                    //     Commands.generateStraffe(commands), 0, Commands.generateTranslation(commands));
-
-                    // if (!_animator.GetCurrentAnimatorStateInfo(1).IsName("Walking"))
-                    // {
-                    //     // _animator.SetTrigger("Walk");   
-                    // }
                 }
             }
         }

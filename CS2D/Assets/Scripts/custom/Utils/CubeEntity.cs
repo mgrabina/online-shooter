@@ -99,6 +99,7 @@ namespace custom.Utils
             rotation.z = rotation1.z + deltaRotation.z;
             entity.aux_rotation = rotation;
             entity.aux_lastCommandProcessed = nextEntity.aux_lastCommandProcessed;
+            entity.aux_health = nextEntity.aux_health;
             return entity;
         }
 
@@ -109,6 +110,7 @@ namespace custom.Utils
             var rotation = ce.aux_rotation;
             entity.aux_rotation = rotation;
             entity.aux_lastCommandProcessed = ce.aux_lastCommandProcessed;
+            entity.aux_health = ce.aux_health;
             return entity;
         }
 

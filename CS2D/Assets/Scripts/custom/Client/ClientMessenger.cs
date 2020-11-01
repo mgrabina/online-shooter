@@ -10,7 +10,7 @@ using Random = UnityEngine.Random;
 
 namespace custom.Client
 {
-    public class ClientMessenger : MonoBehaviour
+    public class ClientMessenger : MonoBehaviour, Messenger
     {
     
         // Networking

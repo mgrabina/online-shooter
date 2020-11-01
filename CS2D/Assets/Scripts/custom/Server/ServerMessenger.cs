@@ -9,7 +9,7 @@ using Random = UnityEngine.Random;
 
 namespace custom.Server
 {
-    public class ServerMessenger : MonoBehaviour
+    public class ServerMessenger : MonoBehaviour, Messenger
     {
         private HashSet<PlayerInfo> players = new HashSet<PlayerInfo>();
         private List<CubeEntity> serverCubes;
@@ -222,6 +222,19 @@ namespace custom.Server
             {
                 player.incrementHealth();
             }
+        }
+        
+        public float getCurrentHealth(int id)
+        {
+            foreach (var cube in serverCubes)
+            {
+                if (cube.Id.Equals(id))
+                {
+                    return cube.Health;
+                }   
+            }
+
+            return -1f;
         }
     }
 }

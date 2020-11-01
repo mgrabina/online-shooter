@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using custom;
 using custom.Client;
+using custom.Server;
 using custom.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,13 +11,20 @@ public class HealthSignal : MonoBehaviour
 {
     private MeshRenderer mesh;
     public Material black, red, yellow, green;
-    private ClientMessenger cm;
+    private Messenger cm;
     public int id;
     
     void Start()
     {
         mesh = this.gameObject.GetComponent<MeshRenderer>();
-        cm = GameObject.Find("ShadowClient").GetComponent<ClientMessenger>();
+        if (MasterBehavior.MasterData.serverMode)
+        {
+            cm = GameObject.Find("ShadowServer").GetComponent<ServerMessenger>();
+        }
+        else
+        {
+            cm = GameObject.Find("ShadowClient").GetComponent<ClientMessenger>();
+        }
     }
 
     void Update()

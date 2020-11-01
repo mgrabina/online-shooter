@@ -19,15 +19,20 @@ namespace custom
             private static GameObject client;
             private static GameObject server;
                 
+            public static bool serverMode = false;
+                
             public static void setServer(GameObject shadowServerGO)
             {
+                serverMode = true;
                 server = shadowServerGO;
                 SceneManager.LoadScene("Warzone");
                 UnityEngine.SceneManagement.SceneManager.activeSceneChanged += OnSceneWasLoadedServer;
+                
             }
 
             public static void setClient(string address, GameObject shadowClientGO)
             {
+                serverMode = false;
                 client = shadowClientGO;
                 ip = address;
                 SceneManager.LoadScene("Warzone");

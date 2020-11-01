@@ -10,7 +10,7 @@ namespace custom.Utils
     {
         private GameObject gameObject;
         private int id = -1;
-        private float health;
+        private float health = 1f;
         private float aux_health;
         Vector3 aux_position = new Vector3();
         Quaternion aux_rotation = new Quaternion();

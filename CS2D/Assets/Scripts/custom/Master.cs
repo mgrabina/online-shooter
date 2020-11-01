@@ -4,6 +4,8 @@ using custom.Server;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+// 192.168.68.104
+
 
 namespace custom
 {
@@ -11,12 +13,8 @@ namespace custom
     {
         public static class MasterData
         {
-            public static Text serverTitle;
             public static string ip = "";
-            private static float floorLimit = 4f;
-            public static bool serverCreated = false;
-            public static bool clientCreated = false;
-            public static bool serverMode = false;
+            private static float floorLimit = 15f;
 
             private static GameObject client;
             private static GameObject server;
@@ -43,10 +41,6 @@ namespace custom
                         Random.Range(-floorLimit, floorLimit)),
                     new Quaternion());
                 Debug.Log("Server Mode");
-                    
-                // serverTitle.text = "Server";
-                serverMode = true;
-                serverCreated = true;
             }
             
             public static void OnSceneWasLoadedClient (UnityEngine.SceneManagement.Scene from, UnityEngine.SceneManagement.Scene to) {
@@ -56,9 +50,6 @@ namespace custom
                     new Quaternion());
                 Destroy(GameObject.Find("ServerCamera"));
                 Debug.Log("Client Mode");
-                serverMode = false;
-                clientCreated = true;
-                // 192.168.68.104
             }
         }
 

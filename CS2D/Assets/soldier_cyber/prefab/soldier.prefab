@@ -105,6 +105,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2ad238859e343aab1e6547ed18a48c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  black: {fileID: 2100000, guid: 554bafd4d5fa24e239e3b1e37c067a6e, type: 2}
+  red: {fileID: 2100000, guid: 96e519ae9602247bebc96c0ee1f01a70, type: 2}
+  yellow: {fileID: 2100000, guid: 4485a962812bb42bdb1cf8f72d19ac1a, type: 2}
+  green: {fileID: 2100000, guid: 6ce63d516b5074d37ba1ac557e62704e, type: 2}
 --- !u!54 &2226390505038547895
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -17,7 +17,7 @@ namespace custom.Client
         [SerializeField] private GameObject clientCubePrefab3p;
         [SerializeField] private GameObject clientCubePrefab1p;
         private Transform camera;
-        private float health;
+        private float health = 1f;
         private Animator _animator;
         private HashSet<int> playerIds = new HashSet<int>();
         private List<CubeEntity> clientCubes;
@@ -275,7 +275,7 @@ namespace custom.Client
             {
                 if (hit.transform.name.Contains("soldier"))
                 {
-                    int id = int.Parse(hit.transform.name.Split(' ')[2]);
+                    int id = int.Parse(hit.transform.name.Split(' ')[1]);
                     mb.GenerateHitEnemyMessage(id).Send();
                 }
             }
@@ -319,7 +319,6 @@ namespace custom.Client
             }
             else
             {
-                Debug.Log(idJoined);
                 clientCube = Instantiate(clientCubePrefab3p, new Vector3(0, 0.2f, 0), new Quaternion());
                 clientCube.name = "soldier " + idJoined;
             }

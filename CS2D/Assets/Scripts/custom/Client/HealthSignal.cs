@@ -6,32 +6,42 @@ using UnityEngine;
 public class HealthSignal : MonoBehaviour
 {
     public CubeEntity CubeEntity;
-    private Color colorPicker;
-    
+    private MeshRenderer mesh;
+    public Material black, red, yellow, green;
+    private float lastHealth = -1f;
+
     // Start is called before the first frame update
     void Start()
     {
-        colorPicker = this.gameObject.GetComponent<MeshRenderer>().material.color;
+        mesh = this.gameObject.GetComponent<MeshRenderer>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (CubeEntity.Health < 0.2)
+        if (lastHealth.Equals(-1f) || !lastHealth.Equals(CubeEntity.Health))
         {
-            colorPicker = Color.black;
-        } 
-        else if (CubeEntity.Health < 0.4)
-        {
-            colorPicker = Color.red;
+            lastHealth = CubeEntity.Health;
         }
-        else if (CubeEntity.Health < 0.7)
+        Debug.Log(lastHealth);
+        if (!lastHealth.Equals(CubeEntity.Health))
         {
-            colorPicker = Color.yellow;
-        }
-        else
-        {
-            colorPicker = Color.green;
+            if (lastHealth < 0.2)
+            {
+                mesh.material = black;
+            } 
+            else if (lastHealth < 0.4)
+            {
+                mesh.material = red;
+            }
+            else if (lastHealth < 0.7)
+            {
+                mesh.material = yellow;
+            }
+            else
+            {
+                mesh.material = green;
+            }   
         }
     }
 }

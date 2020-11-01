@@ -17,7 +17,7 @@ public class HealthSignal : MonoBehaviour
     void Update()
     {
         float lastHealth = CubeEntity.Health;
-        Debug.Log(CubeEntity.Id + " " + CubeEntity.Health);
+        // Debug.Log(CubeEntity.Id + " " + CubeEntity.Health);
         if (lastHealth < 0.2)
         {
             mesh.material = black;

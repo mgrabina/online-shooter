@@ -6,7 +6,7 @@ namespace custom.Network
         {
         }
 
-        public HitEnemyMessage(Type type, int id, Packet packet) : base(Type.JOIN_GAME, id, packet)
+        public HitEnemyMessage(Type type, int id, Packet packet) : base(Type.HIT_ENEMY_MESSAGE, id, packet)
         {
         }
     }

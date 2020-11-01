@@ -276,7 +276,6 @@ namespace custom.Client
                 if (hit.transform.name.Contains("soldier"))
                 {
                     int id = int.Parse(hit.transform.name.Split(' ')[1]);
-                    Debug.Log("Hitted " + id);
                     mb.GenerateHitEnemyMessage(id).Send();
                 }
             }

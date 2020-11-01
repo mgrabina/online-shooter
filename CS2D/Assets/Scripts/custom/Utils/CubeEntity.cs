@@ -146,6 +146,7 @@ namespace custom.Utils
             {
                 this.health *= Constants.health_increment_percentage;
             }
+            Debug.Log(id + " " + " new health " + health);
         }
         
         public void decrementHealth()
@@ -154,6 +155,7 @@ namespace custom.Utils
             {
                 this.health *= Constants.health_increment_percentage;
             }
+            Debug.Log(id + " " + " new health " + health);
         }
 
         public bool isAlive()

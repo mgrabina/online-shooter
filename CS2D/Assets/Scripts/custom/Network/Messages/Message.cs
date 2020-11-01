@@ -71,6 +71,7 @@ namespace custom.Network
                 case Type.INIT_STATUS: return new InitStatusMessage(type, id, incomePacket);
                 case Type.PLAYER_JOINED: return new PlayerJoinedMessage(type, id, incomePacket);
                 case Type.CLIENT_UPDATE: return new ClientUpdateMessage(type, id, incomePacket);
+                case Type.HIT_ENEMY_MESSAGE: return new HitEnemyMessage(type, id, incomePacket);
                 case Type.GAME_STATE_UPDATE: return new ServerUpdateMessage(type, id, incomePacket);
                 case Type.CLIENT_UPDATE_ACK: return new ServerACKMessage(type, id, incomePacket);
             }

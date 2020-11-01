@@ -64,12 +64,11 @@ namespace custom.Server
                 {
                     return;
                 }
-                Debug.Log(message.GetType);
                 switch (message.GetType)
                 {
+                    case Message.Type.HIT_ENEMY_MESSAGE: newHittedPlayer((HitEnemyMessage) message); break;
                     case Message.Type.JOIN_GAME: processJoinGame((JoinGameMessage) message); break;
                     case Message.Type.CLIENT_UPDATE: processClientInput((ClientUpdateMessage) message); break;
-                    case Message.Type.HIT_ENEMY_MESSAGE: newHittedPlayer((HitEnemyMessage) message); break;
                 }
             }
         }
@@ -77,7 +76,6 @@ namespace custom.Server
         private void newHittedPlayer(HitEnemyMessage message)
         {
             int id = message.GetId;
-            Debug.Log("hitted " + id);
             foreach (CubeEntity player in serverCubes)
             {
                 if (player.Id.Equals(id))

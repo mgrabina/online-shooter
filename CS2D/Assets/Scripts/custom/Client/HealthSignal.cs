@@ -1,23 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using custom.Client;
 using custom.Utils;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class HealthSignal : MonoBehaviour
 {
-    public CubeEntity CubeEntity;
     private MeshRenderer mesh;
     public Material black, red, yellow, green;
-
+    private ClientMessenger cm;
+    public int id;
+    
     void Start()
     {
         mesh = this.gameObject.GetComponent<MeshRenderer>();
+        cm = GameObject.Find("ShadowClient").GetComponent<ClientMessenger>();
     }
 
     void Update()
     {
-        float lastHealth = CubeEntity.Health;
-        Debug.Log(CubeEntity.Id + " " + CubeEntity.Health);
+        float lastHealth = cm.getCurrentHealth(id);
+        Debug.Log(id + " " + lastHealth);
         if (lastHealth < 0.2f)
         {
             mesh.material = black;

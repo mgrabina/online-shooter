@@ -327,7 +327,7 @@ namespace custom.Client
 
             if (!me)
             {
-                clientCube.transform.Find("Cube").GetComponent<HealthSignal>().CubeEntity = newCubeEntity;
+                clientCube.transform.Find("Cube").GetComponent<HealthSignal>().id = idJoined;
             }
             clientCubes.Add(newCubeEntity);
             return clientCube;
@@ -346,6 +346,19 @@ namespace custom.Client
         {
             transform.position = new Vector3(position.x, position.y, position.z);
             transform.rotation = new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
+        }
+
+        public float getCurrentHealth(int id)
+        {
+            foreach (var cube in clientCubes)
+            {
+                if (cube.Id.Equals(id))
+                {
+                    return cube.Health;
+                }   
+            }
+
+            return -1f;
         }
     }
 }

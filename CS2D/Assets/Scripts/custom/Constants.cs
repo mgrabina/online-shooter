@@ -18,7 +18,7 @@
         public static float mouseSensibility = 0.4f;
         public static float rotationSpeed = 1.0f;
 
-        public static float health_increment_percentage = 0.0003f;
+        public static float health_increment_percentage = 0.001f;
         public static float health_decrement_percentage = 0.3f;
         public static float min_health_alive = 0.1f;
     }

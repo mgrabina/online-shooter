@@ -105,7 +105,7 @@ namespace custom.Server
                 // serverCube.layer = 8; // Server Layer
                 SetLayerRecursively(serverCube, 8);
                 CubeEntity newcube = new CubeEntity(serverCube, id);
-                serverCube.transform.Find("Cube").GetComponent<HealthSignal>().CubeEntity = newcube;
+                serverCube.transform.Find("Cube").GetComponent<HealthSignal>().id = id;
                 serverCubes.Add( newcube );
                 SendPlayerJoined(id);
                 SendInitStatus(id);

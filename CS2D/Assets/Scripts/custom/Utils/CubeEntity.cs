@@ -10,6 +10,8 @@ namespace custom.Utils
     {
         private GameObject gameObject;
         private int id = -1;
+        private float health;
+        private float aux_health;
         Vector3 aux_position = new Vector3();
         Quaternion aux_rotation = new Quaternion();
         private int lastCommandProcessed = -1, aux_lastCommandProcessed = -1, aux_id = -1;
@@ -23,6 +25,7 @@ namespace custom.Utils
             aux_position = gameObject.transform.position;
             aux_rotation = gameObject.transform.rotation;
             buffer.PutInt(id);
+            buffer.PutFloat(health);
             buffer.PutFloat(aux_position.x);
             buffer.PutFloat(aux_position.y);
             buffer.PutFloat(aux_position.z);
@@ -37,6 +40,7 @@ namespace custom.Utils
             aux_position = new Vector3();
             aux_rotation = new Quaternion();
             aux_id = buffer.GetInt();
+            aux_health = buffer.GetFloat();
             aux_position.x = buffer.GetFloat();
             aux_position.y = buffer.GetFloat();
             aux_position.z = buffer.GetFloat();
@@ -110,6 +114,7 @@ namespace custom.Utils
             gameObject.transform.position = aux_position;
             gameObject.transform.rotation = aux_rotation;
             lastCommandProcessed = aux_lastCommandProcessed;
+            health = aux_health;
         }
 
         public int Id => id;
@@ -127,5 +132,28 @@ namespace custom.Utils
             get { return lastCommandProcessed; }
             set { lastCommandProcessed = value; }
         }
+
+        public void incrementHealth()
+        {
+            if (this.health*Constants.health_increment_percentage <= 1)
+            {
+                this.health *= Constants.health_increment_percentage;
+            }
+        }
+        
+        public void decrementHealth()
+        {
+            if (this.health*Constants.health_decrement_percentage >= 0)
+            {
+                this.health *= Constants.health_increment_percentage;
+            }
+        }
+
+        public bool isAlive()
+        {
+            return health > Constants.min_health_alive;
+        }
+
+        public float Health => health;
     }
 }

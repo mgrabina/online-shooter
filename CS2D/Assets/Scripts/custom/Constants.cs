@@ -15,7 +15,11 @@
         public static float sendRate = 1f / pps;
         
         public static float speed = 3;
+        public static float mouseSensibility = 6;
         public static float rotationSpeed = 1.0f;
 
+        public static float health_increment_percentage = 1.05f;
+        public static float health_decrement_percentage = 0.2f;
+        public static float min_health_alive = 0.05f;
     }
 }

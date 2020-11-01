@@ -17,7 +17,6 @@ namespace custom.Server
         
         private float accumulatedTime_c1 = 0f;
         private int packetNumber = 0;
-        private float mouseSensibility = 6;
 
         private bool online = false;
         
@@ -47,11 +46,13 @@ namespace custom.Server
         public void FixedUpdate()
         {
             accumulatedTime_c1 += Time.deltaTime;
-   
+            
             if (online && players.Count > 0)
             {
                 SendUpdates();
             }
+            
+            regenerateHealth();
         }
 
         private void getAndProcessMessage()
@@ -67,10 +68,23 @@ namespace custom.Server
                 {
                     case Message.Type.JOIN_GAME: processJoinGame((JoinGameMessage) message); break;
                     case Message.Type.CLIENT_UPDATE: processClientInput((ClientUpdateMessage) message); break;
+                    case Message.Type.HIT_ENEMY_MESSAGE: newHittedPlayer((HitEnemyMessage) message); break;
                 }
             }
         }
-        
+
+        private void newHittedPlayer(HitEnemyMessage message)
+        {
+            int id = message.GetId;
+
+            foreach (CubeEntity player in serverCubes)
+            {
+                if (player.Id.Equals(id))
+                {
+                    player.decrementHealth();
+                }
+            }
+        }
         
         public void processJoinGame(JoinGameMessage message)
         {
@@ -151,10 +165,10 @@ namespace custom.Server
                         //     Commands.generateStraffe(commands), 0, Commands.generateTranslation(commands));
                         
                         Vector3 move = cube.GameObject.transform.forward * commands.y 
-                                       + cube.GameObject.transform.right * commands.x; 
+                                       + cube.GameObject.transform.right * commands.x;
                         cube.GameObject.GetComponent<CharacterController>().
                             Move(Constants.speed * Time.deltaTime * move);
-                        cube.GameObject.transform.Rotate(0, commands.mouse_x * mouseSensibility, 0);
+                        cube.GameObject.transform.Rotate(0, commands.mouse_x * Constants.mouseSensibility, 0);
 
                         cube.LastCommandProcessed = commands.number;
                         break;
@@ -191,6 +205,14 @@ namespace custom.Server
                 }
             }
             return null;
+        }
+
+        public void regenerateHealth()
+        {
+            foreach (CubeEntity player in serverCubes)
+            {
+                player.incrementHealth();
+            }
         }
     }
 }

@@ -17,6 +17,7 @@ namespace custom.Client
         [SerializeField] private GameObject clientCubePrefab3p;
         [SerializeField] private GameObject clientCubePrefab1p;
         private Transform camera;
+        private float health;
         private Animator _animator;
         private HashSet<int> playerIds = new HashSet<int>();
         private List<CubeEntity> clientCubes;
@@ -34,6 +35,7 @@ namespace custom.Client
         
         private void Start()
         {
+            Destroy(GameObject.Find("ServerCamera"));
             id = generate_id();
             mb = new MessageBuilder(id, Constants.clients_base_port + id*10, Constants.server_base_port, MasterBehavior.MasterData.ip);
             clientCubes = new List<CubeEntity>();
@@ -57,6 +59,10 @@ namespace custom.Client
             
             if (registered && connected)
             {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    Shoot();
+                }
                 updateServerVisualization();
             }
         }
@@ -220,6 +226,7 @@ namespace custom.Client
                 timeout,                
                 Input.GetAxis("Mouse X")
             );
+
             if (command.notNull())
             {
                 commands.Add(command);
@@ -238,16 +245,41 @@ namespace custom.Client
                 {
                     lastCommandLocallyExcecuted = commands.number;
                     
-                    myRigidbody.transform.Translate(
-                        Commands.generateStraffe(commands), 0, Commands.generateTranslation(commands));
+                    Vector3 move = myRigidbody.gameObject.transform.forward * commands.y 
+                                   + myRigidbody.gameObject.transform.right * commands.x;
+                    myRigidbody.
+                        Move(Constants.speed * Time.deltaTime * move);
+                    myRigidbody.gameObject.transform.Rotate(0, commands.mouse_x * Constants.mouseSensibility, 0);
+
+                    myRigidbody.transform.Find("Main Camera").transform.rotation = myRigidbody.transform.rotation;
+
+                    
+                    
+                    // myRigidbody.transform.Translate(
+                    //     Commands.generateStraffe(commands), 0, Commands.generateTranslation(commands));
+
                     if (!_animator.GetCurrentAnimatorStateInfo(1).IsName("Walking"))
                     {
-                        _animator.SetTrigger("Walk");   
+                        // _animator.SetTrigger("Walk");   
                     }
                 }
             }
         }
 
+        private void Shoot()
+        {
+            Ray ray = myRigidbody.transform.Find("Main Camera")
+                .gameObject.GetComponent<UnityEngine.Camera>().ScreenPointToRay(Input.mousePosition);
+            RaycastHit[] allhHit = Physics.RaycastAll(ray).OrderBy(h=>h.distance).ToArray();
+            foreach (var hit in allhHit)
+            {
+                if (hit.transform.name.Contains("soldier"))
+                {
+                    int id = int.Parse(hit.transform.name.Split(' ')[2]);
+                    mb.GenerateHitEnemyMessage(id).Send();
+                }
+            }
+        }
         private void Concilliate()
         {
             CubeEntity lastFromServer = interpolationBuffer.Last().getEntityById(id);
@@ -268,6 +300,7 @@ namespace custom.Client
 
             myRigidbody.transform.position = concilliate.position;
             myRigidbody.transform.rotation = concilliate.rotation;
+            this.health = lastFromServer.Health;
         }
 
         private static int generate_id()
@@ -288,9 +321,16 @@ namespace custom.Client
             {
                 Debug.Log(idJoined);
                 clientCube = Instantiate(clientCubePrefab3p, new Vector3(0, 0.2f, 0), new Quaternion());
+                clientCube.name = "soldier " + idJoined;
             }
-            
-            clientCubes.Add(new CubeEntity(clientCube, idJoined));
+
+            CubeEntity newCubeEntity = new CubeEntity(clientCube, idJoined);
+
+            if (!me)
+            {
+                clientCube.transform.Find("Cube").GetComponent<HealthSignal>().CubeEntity = newCubeEntity;
+            }
+            clientCubes.Add(newCubeEntity);
             return clientCube;
         }
 

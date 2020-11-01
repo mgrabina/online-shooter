@@ -87,6 +87,8 @@ namespace custom.Network
             CLIENT_UPDATE_ACK,
             GAME_STATE_UPDATE,
             
+            HIT_ENEMY_MESSAGE,
+
             DISCONNECT_REQUEST,
             PLAYER_DISCONNECTED,
             
@@ -102,6 +104,8 @@ namespace custom.Network
             Type.CLIENT_UPDATE,
             Type.CLIENT_UPDATE_ACK,
             Type.GAME_STATE_UPDATE,
+            
+            Type.HIT_ENEMY_MESSAGE,
 
             Type.DISCONNECT_REQUEST,
             Type.PLAYER_DISCONNECTED

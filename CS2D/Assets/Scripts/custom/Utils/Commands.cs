@@ -60,7 +60,7 @@ namespace custom.Utils
 
         public bool notNull()
         {
-            return x != 0f || y != 0f || space;
+            return x != 0f || y != 0f || mouse_x != 0f || space;
         }
     }
 }

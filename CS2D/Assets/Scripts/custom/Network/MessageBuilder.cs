@@ -35,6 +35,11 @@ namespace custom.Network
             return new ClientUpdateMessage(_gameMemberId, _channel, _destinationIP, _channelPortD);
         }
         
+        public JoinGameMessage GenerateHitEnemyMessage(int id)
+        {
+            return new JoinGameMessage(id, _channel, _destinationIP, _channelPortD);
+        }
+        
         // Server Side
         public PlayerJoinedMessage GeneratePlayerJoinedMessage(PlayerInfo player)
         {

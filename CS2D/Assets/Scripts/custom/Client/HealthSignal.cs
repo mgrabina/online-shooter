@@ -8,40 +8,30 @@ public class HealthSignal : MonoBehaviour
     public CubeEntity CubeEntity;
     private MeshRenderer mesh;
     public Material black, red, yellow, green;
-    private float lastHealth = -1f;
 
-    // Start is called before the first frame update
     void Start()
     {
         mesh = this.gameObject.GetComponent<MeshRenderer>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (lastHealth.Equals(-1f))
+        float lastHealth = CubeEntity.Health;
+        if (lastHealth < 0.2)
         {
-            lastHealth = CubeEntity.Health;
+            mesh.material = black;
+        } 
+        else if (lastHealth < 0.4)
+        {
+            mesh.material = red;
         }
-        if (!lastHealth.Equals(CubeEntity.Health))
+        else if (lastHealth < 0.7)
         {
-            lastHealth = CubeEntity.Health;
-            if (lastHealth < 0.2)
-            {
-                mesh.material = black;
-            } 
-            else if (lastHealth < 0.4)
-            {
-                mesh.material = red;
-            }
-            else if (lastHealth < 0.7)
-            {
-                mesh.material = yellow;
-            }
-            else
-            {
-                mesh.material = green;
-            }   
+            mesh.material = yellow;
+        }
+        else
+        {
+            mesh.material = green;
         }
     }
 }

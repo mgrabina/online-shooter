@@ -153,7 +153,7 @@ namespace custom.Utils
         {
             if (this.health*Constants.health_decrement_percentage >= 0)
             {
-                this.health *= Constants.health_increment_percentage;
+                this.health *= Constants.health_decrement_percentage;
             }
             Debug.Log(id + " " + " new health " + health);
         }

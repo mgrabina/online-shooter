@@ -10,7 +10,7 @@ namespace custom.Utils
     {
         private GameObject gameObject;
         private int id = -1;
-        private float health = 1f;
+        private float health;
         private float aux_health;
         Vector3 aux_position = new Vector3();
         Quaternion aux_rotation = new Quaternion();
@@ -19,6 +19,13 @@ namespace custom.Utils
         public CubeEntity(GameObject go, int id){
             this.gameObject = go;
             this.id = id;
+            this.health = 1f;
+        }
+        
+        public CubeEntity(GameObject go, int id, float health){
+            this.gameObject = go;
+            this.id = id;
+            this.health = health;
         }
 
         public void Serialize(BitBuffer buffer) {
@@ -78,7 +85,7 @@ namespace custom.Utils
 
         public static CubeEntity createInterpolationEntity(CubeEntity previousEntity, CubeEntity nextEntity, float time)
         {
-            var entity = new CubeEntity(previousEntity.gameObject, previousEntity.id);
+            var entity = new CubeEntity(previousEntity.gameObject, previousEntity.id, previousEntity.Health);
             entity.aux_position = entity.aux_position + Vector3.Lerp(
                                                        previousEntity.aux_position, 
                                                        nextEntity.aux_position, time);
@@ -97,7 +104,7 @@ namespace custom.Utils
 
         public static CubeEntity createFromUnique(CubeEntity ce)
         {
-            var entity = new CubeEntity(ce.gameObject, ce.id);
+            var entity = new CubeEntity(ce.gameObject, ce.id, ce.Health);
             entity.aux_position = entity.aux_position + ce.aux_position;
             var rotation = ce.aux_rotation;
             entity.aux_rotation = rotation;

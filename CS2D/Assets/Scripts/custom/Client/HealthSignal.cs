@@ -19,13 +19,13 @@ public class HealthSignal : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (lastHealth.Equals(-1f) || !lastHealth.Equals(CubeEntity.Health))
+        if (lastHealth.Equals(-1f))
         {
             lastHealth = CubeEntity.Health;
         }
-        Debug.Log(lastHealth);
         if (!lastHealth.Equals(CubeEntity.Health))
         {
+            lastHealth = CubeEntity.Health;
             if (lastHealth < 0.2)
             {
                 mesh.material = black;

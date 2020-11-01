@@ -76,7 +76,6 @@ namespace custom.Server
         private void newHittedPlayer(HitEnemyMessage message)
         {
             int id = message.GetId;
-
             foreach (CubeEntity player in serverCubes)
             {
                 if (player.Id.Equals(id))

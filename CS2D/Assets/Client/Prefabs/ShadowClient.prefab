@@ -47,3 +47,6 @@ MonoBehaviour:
     type: 3}
   clientCubePrefab1p: {fileID: 173116, guid: c391f12a928274acab8576bb6030641d, type: 3}
   id: 0
+  concilliatePrefab: {fileID: 82213771359674269, guid: 08c55863e61ca7b70ae081f6741d4a23,
+    type: 3}
+  requiredSnapshots: 3

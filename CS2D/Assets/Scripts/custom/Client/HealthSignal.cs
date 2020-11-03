@@ -23,11 +23,9 @@ public class HealthSignal : MonoBehaviour
     {
         if (cm == null)
         {
-            Debug.Log("Error");
             return;
         }
         float lastHealth = cm.getCurrentHealth(id);
-        Debug.Log(id + " " + lastHealth);
         if (lastHealth < 0.2f)
         {
             mesh.material = black;

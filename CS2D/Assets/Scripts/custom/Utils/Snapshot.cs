@@ -40,16 +40,20 @@ namespace custom.Utils
             List<CubeEntity> cubeEntities = new List<CubeEntity>();
             for (int i = 0; i < previous.entities.Count; i++)
             {
-                int nextId = next.entities[i].Id;
-                if (nextId != id)
+                int nextId = previous.entities[i].Id;
+                if (!nextId.Equals(id))
                 {
                     if (cm.isIdRegistered(nextId))
                     {
-                        cubeEntities.Add(CubeEntity.createInterpolationEntity(previous.entities[i], next.entities[i], time));
-                    }
-                    else
-                    {
-                        // cubeEntities.Add(CubeEntity.createInterpolationEntity(new CubeEntity(go, nextId), next.entities[i], time));
+                        var cubeEntity = next.getEntityById(nextId);
+                        if (cubeEntity != null)
+                        {
+                            cubeEntities.Add(CubeEntity.createInterpolationEntity(previous.entities[i], cubeEntity, time));
+                        }
+                        else
+                        {
+                            cm.deletePlayer(nextId);
+                        }
                     }
                 }
             }

@@ -28,8 +28,8 @@ public class MouseLookScript : MonoBehaviour {
 		}
 		deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
 
-		if(GetComponent<PlayerMovementScript>().currentSpeed > 1)
-			HeadMovement ();
+		// if(GetComponent<PlayerMovementScript>().currentSpeed > 1)
+		// 	HeadMovement ();
 
 	}
 
@@ -73,9 +73,6 @@ void FixedUpdate(){
 	 */
 	if(Input.GetAxis("Fire2") != 0){
 		mouseSensitvity = mouseSensitvity_aiming;
-	}
-	else if(GetComponent<PlayerMovementScript>().maxSpeed > 5){
-		mouseSensitvity = mouseSensitvity_notAiming;
 	}
 	else{
 		mouseSensitvity = mouseSensitvity_notAiming;

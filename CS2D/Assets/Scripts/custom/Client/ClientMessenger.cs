@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using custom.Network;
 using custom.Utils;
+using TMPro;
 using UnityEngine;
 using Camera = UnityEngine.Camera;
 using Random = UnityEngine.Random;
@@ -30,14 +31,16 @@ namespace custom.Client
         private bool clientResponding = false, registered = false, connected = true, initialized = false;
         private float clientTime = 0f, accumulatedTime_c2 = 0f;
         private int packetNumber = 0, lastCommandLocallyExcecuted = 0;
-        private CharacterController myRigidbody;
-        private Transform concilliate;
+        private CharacterController myCharacterController;
+        private GameObject concilliateGO;
+        public GameObject concilliatePrefab;
         public int requiredSnapshots = 3;
 
         private void Start()
         {
             Destroy(GameObject.Find("ServerCamera"));
             id = generate_id();
+            Debug.Log("me " + id);
             mb = new MessageBuilder(id, Constants.clients_base_port + id*10, Constants.server_base_port, MasterBehavior.MasterData.ip);
             clientCubes = new List<CubeEntity>();
             if (!registered)
@@ -45,7 +48,7 @@ namespace custom.Client
                 register();
             }
 
-            concilliate = new GameObject().transform;
+            concilliateGO = Instantiate(concilliatePrefab, new Vector3(0, 1f, 0), Quaternion.identity);
         }
 
         private void Update()
@@ -66,6 +69,11 @@ namespace custom.Client
                     Shoot();
                 }
                 updateServerVisualization();
+                
+                while (interpolationBuffer.Count >= requiredSnapshots) {
+                    Interpolate();
+                    Concilliate();
+                }
             }
         }
 
@@ -78,12 +86,6 @@ namespace custom.Client
                 ReadInput();
                 Predict();
                 sendCommands();
-                
-                
-                // while (interpolationBuffer.Count >= requiredSnapshots) {
-                    Interpolate();
-                    Concilliate();
-                // }
             }
         }
 
@@ -145,8 +147,7 @@ namespace custom.Client
             if (idJoined == this.id)
             {
                 registered = true;
-                myRigidbody = clientCube.GetComponent<CharacterController>();
-                setTransform(myRigidbody.transform.position, myRigidbody.transform.rotation, concilliate);
+                myCharacterController = clientCube.GetComponent<CharacterController>();
                 this._animator = clientCube.GetComponent<Animator>();
                 clientCube.GetComponentInChildren<Camera>().tag = "MasterClient";
             }
@@ -211,9 +212,11 @@ namespace custom.Client
         }
         private void Interpolate()
         {
+            if (interpolationBuffer.Count < 2)
+            {
+                return;
+            }
             
-            Debug.Log((interpolationBuffer[0]).GetPacketNumber());
-            Debug.Log((interpolationBuffer[1]).GetPacketNumber());
             var previousTime = (interpolationBuffer[0]).GetPacketNumber() * (1f / Constants.pps);
             var nextTime = interpolationBuffer[1].GetPacketNumber() * (1f / Constants.pps);
             var period = (clientTime - previousTime) / (nextTime - previousTime);
@@ -225,9 +228,7 @@ namespace custom.Client
             if (clientTime > nextTime)
             {
                 interpolationBuffer.RemoveAt(0);
-                Debug.Log("REMOVED");
             }
-            Debug.Log(interpolationBuffer.Count);
         }
 
         private void setCurrentHealths(Snapshot snap, List<CubeEntity> cubes)
@@ -237,7 +238,7 @@ namespace custom.Client
                 CubeEntity other = snap.getEntityById(cube.Id);
                 if (other == null)
                 {
-                    Debug.Log("ERROR");
+                    //me
                 }
                 else
                 {
@@ -272,20 +273,20 @@ namespace custom.Client
                 {
                     lastCommandLocallyExcecuted = commands.number;
                     
-                    Vector3 move = myRigidbody.gameObject.transform.forward * commands.y 
-                                   + myRigidbody.gameObject.transform.right * commands.x;
-                    myRigidbody.
+                    Vector3 move = myCharacterController.gameObject.transform.forward * commands.y 
+                                   + myCharacterController.gameObject.transform.right * commands.x;
+                    myCharacterController.
                         Move(Constants.speed * Time.deltaTime * move);
-                    myRigidbody.gameObject.transform.Rotate(0, commands.mouse_x * Constants.mouseSensibility, 0);
-
-                    myRigidbody.transform.Find("Main Camera").transform.rotation = myRigidbody.transform.rotation;
+                    myCharacterController.gameObject.transform.Rotate(0, commands.mouse_x * Constants.mouseSensibility, 0);
+            
+                    myCharacterController.transform.Find("Main Camera").transform.rotation = myCharacterController.transform.rotation;
                 }
             }
         }
 
         private void Shoot()
         {
-            Ray ray = myRigidbody.transform.Find("Main Camera")
+            Ray ray = myCharacterController.transform.Find("Main Camera")
                 .gameObject.GetComponent<UnityEngine.Camera>().ScreenPointToRay(Input.mousePosition);
             RaycastHit[] allhHit = Physics.RaycastAll(ray).OrderBy(h=>h.distance).ToArray();
             foreach (var hit in allhHit)
@@ -299,25 +300,31 @@ namespace custom.Client
         }
         private void Concilliate()
         {
-            CubeEntity lastFromServer = interpolationBuffer.Last().getEntityById(id);
-            setTransform(lastFromServer.AuxPosition, lastFromServer.AuxRotation, concilliate);
-            int currentServerCommandExcecuted = lastFromServer.AuxLastCommandProcessed;
-    
-            foreach (var command in commands)    
+            var auxClient = interpolationBuffer[interpolationBuffer.Count - 1].getEntityById(id);
+            int currentServerCommandExcecuted = auxClient.AuxLastCommandProcessed;
+
+            concilliateGO.transform.position = auxClient.AuxPosition;
+            concilliateGO.transform.rotation = auxClient.AuxRotation;
+            
+            foreach (var auxCommand in commands)
             {
-                if (currentServerCommandExcecuted < command.number)
+                if (currentServerCommandExcecuted < auxCommand.number)
                 {
-                    currentServerCommandExcecuted = command.number;
-                    
-                    concilliate.Translate(
-                        Commands.generateStraffe(command), 0, Commands.generateTranslation(command));
-                    
+                    currentServerCommandExcecuted = auxCommand.number;
+
+                    Vector3 move = concilliateGO.transform.forward * auxCommand.y + concilliateGO.transform.right * auxCommand.x;
+                    concilliateGO.GetComponent<CharacterController>().Move(Constants.speed * Time.deltaTime * move);
+                    // concilliateGO.transform.Rotate(0, auxCommand.mouse_x * Constants.mouseSensibility, 0);
                 }
+
             }
 
-            myRigidbody.transform.position = concilliate.position;
-            myRigidbody.transform.rotation = concilliate.rotation;
-            this.health = lastFromServer.Health;
+            myCharacterController.gameObject.transform.position = concilliateGO.transform.position;
+
+            myCharacterController.gameObject.transform.rotation = concilliateGO.transform.rotation;
+            
+            
+            this.health = auxClient.Health;
         }
 
         private static int generate_id()
@@ -377,6 +384,19 @@ namespace custom.Client
             }
 
             return -1f;
+        }
+
+        public void deletePlayer(int id)
+        {
+            playerIds.Remove(id);
+            foreach (var cube in clientCubes)
+            {
+                if (cube.Id.Equals(id))
+                {
+                    clientCubes.Remove(cube);
+                    Destroy(cube.GameObject);
+                }
+            }
         }
     }
 }

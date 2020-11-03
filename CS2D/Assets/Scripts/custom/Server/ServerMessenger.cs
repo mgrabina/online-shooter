@@ -159,8 +159,10 @@ namespace custom.Server
             {
                 foreach (var player in players)
                 {
-                    
-                    mb.GenerateServerUpdateMessage(player).setArguments(new Snapshot(lastSnapshot[player.Id]++, serverCubes)).Send();
+                    Debug.Log(player.Id);
+                    Debug.Log(lastSnapshot.Keys.ToString());
+                    mb.GenerateServerUpdateMessage(player)
+                        .setArguments(new Snapshot(lastSnapshot[player.Id]++, serverCubes)).Send();
                     accumulatedTime_c1 -= Constants.sendRate;
                     packetNumber++;
                 }

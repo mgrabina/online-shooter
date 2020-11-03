@@ -31,7 +31,6 @@ namespace custom.Server
             online = true;
             serverCubes = new List<CubeEntity>();
             lastSnapshot = new Dictionary<int, int>();
-
         }
 
         private void Update()
@@ -102,6 +101,7 @@ namespace custom.Server
             IPEndPoint endPoint = message.Packet.fromEndPoint;
             if (!players.Contains(new PlayerInfo(id, endPoint)))
             {
+                lastSnapshot.Add(id, 0);
                 players.Add(new PlayerInfo(id, endPoint));
                 var serverCube = Instantiate(serverGameObject, 
                     new Vector3(Random.Range(-4, 4), 1f, Random.Range(-4,4)), Quaternion.identity);
@@ -113,7 +113,6 @@ namespace custom.Server
                 serverCubes.Add( newcube );
                 SendPlayerJoined(id);
                 SendInitStatus(id);
-                lastSnapshot[id] = 0;
             }
             
         }
@@ -160,6 +159,7 @@ namespace custom.Server
             {
                 foreach (var player in players)
                 {
+                    
                     mb.GenerateServerUpdateMessage(player).setArguments(new Snapshot(lastSnapshot[player.Id]++, serverCubes)).Send();
                     accumulatedTime_c1 -= Constants.sendRate;
                     packetNumber++;

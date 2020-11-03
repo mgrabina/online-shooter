@@ -277,9 +277,9 @@ namespace custom.Client
                                    + myCharacterController.gameObject.transform.right * commands.x;
                     myCharacterController.
                         Move(Constants.speed * Time.deltaTime * move);
-                    myCharacterController.gameObject.transform.Rotate(0, commands.mouse_x * Constants.mouseSensibility, 0);
+                    // myCharacterController.gameObject.transform.Rotate(0, commands.mouse_x * Constants.mouseSensibility, 0);
             
-                    myCharacterController.transform.Find("Main Camera").transform.rotation = myCharacterController.transform.rotation;
+                    // myCharacterController.transform.Find("Main Camera").transform.rotation = myCharacterController.transform.rotation;
                 }
             }
         }

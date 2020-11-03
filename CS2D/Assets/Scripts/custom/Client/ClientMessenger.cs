@@ -32,7 +32,8 @@ namespace custom.Client
         private int packetNumber = 0, lastCommandLocallyExcecuted = 0;
         private CharacterController myRigidbody;
         private Transform concilliate;
-        
+        public int requiredSnapshots = 3;
+
         private void Start()
         {
             Destroy(GameObject.Find("ServerCamera"));
@@ -49,7 +50,8 @@ namespace custom.Client
 
         private void Update()
         {
-            
+            clientTime += Time.deltaTime;
+
             getAndProcessMessage();
 
             if (Input.GetKeyDown(KeyCode.M))
@@ -69,7 +71,6 @@ namespace custom.Client
 
         private void FixedUpdate()
         {
-            clientTime += Time.deltaTime;
             accumulatedTime_c2 += Time.deltaTime;
 
             if (clientResponding)
@@ -77,8 +78,12 @@ namespace custom.Client
                 ReadInput();
                 Predict();
                 sendCommands();
-                Interpolate();
-                Concilliate();
+                
+                
+                // while (interpolationBuffer.Count >= requiredSnapshots) {
+                    Interpolate();
+                    Concilliate();
+                // }
             }
         }
 
@@ -125,6 +130,8 @@ namespace custom.Client
             snapshot.Deserialize(buffer, this);
             
             Snapshot.setUniqueSnapshot(snapshot).applyChanges(id);
+            setCurrentHealths(snapshot, clientCubes);
+
         }
         
         private void processPlayerJoined(PlayerJoinedMessage message)
@@ -157,8 +164,9 @@ namespace custom.Client
             snapshot.Deserialize(buffer, this);
 
             int interpolationBufferSize = interpolationBuffer.Count;
-            if (interpolationBufferSize == 0
-                || snapshot.GetPacketNumber() > interpolationBuffer[interpolationBufferSize - 1].GetPacketNumber())
+            if ((interpolationBufferSize == 0
+                || snapshot.GetPacketNumber() > interpolationBuffer[interpolationBufferSize - 1].GetPacketNumber()) 
+                && interpolationBufferSize < requiredSnapshots + 1)
             {
                 interpolationBuffer.Add(snapshot);
             }
@@ -203,23 +211,45 @@ namespace custom.Client
         }
         private void Interpolate()
         {
+            
+            Debug.Log((interpolationBuffer[0]).GetPacketNumber());
+            Debug.Log((interpolationBuffer[1]).GetPacketNumber());
             var previousTime = (interpolationBuffer[0]).GetPacketNumber() * (1f / Constants.pps);
             var nextTime = interpolationBuffer[1].GetPacketNumber() * (1f / Constants.pps);
             var period = (clientTime - previousTime) / (nextTime - previousTime);
             var interpolatedSnapshot =
                 Snapshot.createInterpolationSnapshot(interpolationBuffer[0], interpolationBuffer[1], period, id, this);
             interpolatedSnapshot.applyChanges(id);
-    
+            setCurrentHealths(interpolatedSnapshot, clientCubes);
+            
             if (clientTime > nextTime)
             {
                 interpolationBuffer.RemoveAt(0);
+                Debug.Log("REMOVED");
             }
+            Debug.Log(interpolationBuffer.Count);
+        }
+
+        private void setCurrentHealths(Snapshot snap, List<CubeEntity> cubes)
+        {
+            foreach (var cube in cubes)
+            {
+                CubeEntity other = snap.getEntityById(cube.Id);
+                if (other == null)
+                {
+                    Debug.Log("ERROR");
+                }
+                else
+                {
+                    cube.Health = other.Health;
+                }
+            }   
         }
 
         private void ReadInput()
         {
             var timeout = Time.time + 2;
-            var command = new Commands(packetNumber++,
+            var command = new Commands(packetNumber + 1,
                 Input.GetAxis("Horizontal"),
                 Input.GetAxis("Vertical"),
                 Input.GetKeyDown(KeyCode.Space), 
@@ -230,10 +260,7 @@ namespace custom.Client
             if (command.notNull())
             {
                 commands.Add(command);
-            }
-            else
-            {
-                packetNumber--;
+                packetNumber++;
             }
         }
 

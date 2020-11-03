@@ -23,12 +23,15 @@ namespace custom.Server
         private MessageBuilder mb;
         public GameObject serverGameObject;
 
+        private Dictionary<int, int> lastSnapshot;
         
         private void Awake()
         {
             mb = new MessageBuilder(-1, Constants.server_base_port, Constants.clients_base_port, Constants.serverIP);
             online = true;
             serverCubes = new List<CubeEntity>();
+            lastSnapshot = new Dictionary<int, int>();
+
         }
 
         private void Update()
@@ -110,6 +113,7 @@ namespace custom.Server
                 serverCubes.Add( newcube );
                 SendPlayerJoined(id);
                 SendInitStatus(id);
+                lastSnapshot[id] = 0;
             }
             
         }
@@ -139,7 +143,7 @@ namespace custom.Server
             {
                 throw new Exception("Invalid ID");
             }
-            mb.GenerateInitStatusMessage(pi).setArguments(new Snapshot(this.packetNumber++, serverCubes)).Send();
+            mb.GenerateInitStatusMessage(pi).setArguments(new Snapshot(lastSnapshot[id]++, serverCubes)).Send();
         }
         
         public void SendPlayerJoined(int id)
@@ -156,8 +160,9 @@ namespace custom.Server
             {
                 foreach (var player in players)
                 {
-                    mb.GenerateServerUpdateMessage(player).setArguments(new Snapshot(this.packetNumber++, serverCubes)).Send();
+                    mb.GenerateServerUpdateMessage(player).setArguments(new Snapshot(lastSnapshot[player.Id]++, serverCubes)).Send();
                     accumulatedTime_c1 -= Constants.sendRate;
+                    packetNumber++;
                 }
             }   
         }

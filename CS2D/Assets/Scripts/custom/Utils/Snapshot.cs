@@ -86,7 +86,7 @@ namespace custom.Utils
         {
             foreach (var aux in entities)
             {
-                if (aux.Id == id)
+                if (aux.Id.Equals(id))
                 {
                     return aux;
                 }

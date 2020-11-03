@@ -48,6 +48,7 @@ namespace custom.Utils
             aux_rotation = new Quaternion();
             aux_id = buffer.GetInt();
             aux_health = buffer.GetFloat();
+            health = aux_health;
             aux_position.x = buffer.GetFloat();
             aux_position.y = buffer.GetFloat();
             aux_position.z = buffer.GetFloat();
@@ -74,18 +75,20 @@ namespace custom.Utils
             {
                 this.gameObject = cm.createClient(aux_id, false);
                 this.id = aux_id;
+                this.health = aux_health;
             }
             else
             {
                 this.gameObject = founded.gameObject;
                 this.id = founded.id;
+                this.health = founded.health;
             }
 
         }
 
         public static CubeEntity createInterpolationEntity(CubeEntity previousEntity, CubeEntity nextEntity, float time)
         {
-            var entity = new CubeEntity(previousEntity.gameObject, previousEntity.id, previousEntity.Health);
+            var entity = new CubeEntity(previousEntity.gameObject, previousEntity.id, nextEntity.Health);
             entity.aux_position = entity.aux_position + Vector3.Lerp(
                                                        previousEntity.aux_position, 
                                                        nextEntity.aux_position, time);
@@ -111,6 +114,7 @@ namespace custom.Utils
             entity.aux_rotation = rotation;
             entity.aux_lastCommandProcessed = ce.aux_lastCommandProcessed;
             entity.aux_health = ce.aux_health;
+            entity.Health = ce.Health;
             return entity;
         }
 
@@ -126,15 +130,35 @@ namespace custom.Utils
             health = aux_health;
         }
 
-        public int Id => id;
+        public int Id
+        {
+            get => id;
+            set => id = value;
+        }
 
-        public GameObject GameObject => gameObject;
+        public GameObject GameObject
+        {
+            get => gameObject;
+            set => gameObject = value;
+        }
 
-        public Vector3 AuxPosition => aux_position;
+        public Vector3 AuxPosition
+        {
+            get => aux_position;
+            set => aux_position = value;
+        }
 
-        public Quaternion AuxRotation => aux_rotation;
+        public Quaternion AuxRotation
+        {
+            get => aux_rotation;
+            set => aux_rotation = value;
+        }
 
-        public int AuxLastCommandProcessed => aux_lastCommandProcessed;
+        public int AuxLastCommandProcessed
+        {
+            get => aux_lastCommandProcessed;
+            set => aux_lastCommandProcessed = value;
+        }
 
         public int LastCommandProcessed
         {
@@ -165,6 +189,10 @@ namespace custom.Utils
             return health > Constants.min_health_alive;
         }
 
-        public float Health => health;
+        public float Health
+        {
+            get => health;
+            set => health = value;
+        }
     }
 }

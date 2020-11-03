@@ -304,7 +304,7 @@ namespace custom.Client
             int currentServerCommandExcecuted = auxClient.AuxLastCommandProcessed;
 
             concilliateGO.transform.position = auxClient.AuxPosition;
-            concilliateGO.transform.rotation = auxClient.AuxRotation;
+            // concilliateGO.transform.rotation = auxClient.AuxRotation;
             
             foreach (var auxCommand in commands)
             {
@@ -321,7 +321,7 @@ namespace custom.Client
 
             myCharacterController.gameObject.transform.position = concilliateGO.transform.position;
 
-            myCharacterController.gameObject.transform.rotation = concilliateGO.transform.rotation;
+            // myCharacterController.gameObject.transform.rotation = concilliateGO.transform.rotation;
             
             
             this.health = auxClient.Health;
@@ -367,11 +367,6 @@ namespace custom.Client
             mb.Disconnect();
         }
 
-        private void setTransform(Vector3 position, Quaternion rotation, Transform transform)
-        {
-            transform.position = new Vector3(position.x, position.y, position.z);
-            transform.rotation = new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
-        }
 
         public float getCurrentHealth(int id)
         {
@@ -395,6 +390,7 @@ namespace custom.Client
                 {
                     clientCubes.Remove(cube);
                     Destroy(cube.GameObject);
+                    return;
                 }
             }
         }

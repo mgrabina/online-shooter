@@ -176,12 +176,13 @@ namespace custom.Server
                     {
                         // cube.GameObject.GetComponent<CharacterController>().transform.Translate(
                         //     Commands.generateStraffe(commands), 0, Commands.generateTranslation(commands));
-                        
+                        Debug.Log(commands.rotation);
+                        Debug.Log(commands.y);
+
                         Vector3 move = cube.GameObject.transform.forward * commands.y 
                                        + cube.GameObject.transform.right * commands.x;
                         cube.GameObject.GetComponent<CharacterController>().
                             Move(Constants.speed * Time.deltaTime * move);
-                        Debug.Log(commands.rotation);
                         cube.GameObject.transform.rotation.Set(0, commands.rotation, 0 ,0);
 
                         cube.LastCommandProcessed = commands.number;

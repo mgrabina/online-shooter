@@ -183,7 +183,8 @@ namespace custom.Server
                                        + cube.GameObject.transform.right * commands.x;
                         cube.GameObject.GetComponent<CharacterController>().
                             Move(Constants.speed * Time.deltaTime * move);
-                        cube.GameObject.transform.rotation.Set(0, commands.rotation, 0 ,0);
+                        cube.GameObject.GetComponent<CharacterController>().transform
+                            .rotation.Set(0, commands.rotation, 0 ,0);
 
                         cube.LastCommandProcessed = commands.number;
                         break;

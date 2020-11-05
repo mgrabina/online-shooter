@@ -363,6 +363,12 @@ namespace custom.Client
                 clientCube.transform.Find("Cube").GetComponent<HealthSignal>().id = idJoined;
                 clientCube.transform.Find("Cube").GetComponent<HealthSignal>().cm = this;
             }
+            else
+            {
+                clientCube.transform.Find("HUD_Life").GetComponent<HealthSignal2>().id = idJoined;
+                clientCube.transform.Find("HUD_Life").GetComponent<HealthSignal2>().cm = this;
+
+            }
             clientCubes.Add(newCubeEntity);
             return clientCube;
         }
@@ -407,7 +413,7 @@ namespace custom.Client
 
         private IEnumerator removeObject(CubeEntity cube)
         {
-            yield return new WaitForSeconds(5.5f);
+            yield return new WaitForSeconds(5f);
             Destroy(cube.GameObject);
         }
     }

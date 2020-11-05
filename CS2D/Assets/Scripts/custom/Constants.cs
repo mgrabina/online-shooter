@@ -14,8 +14,8 @@
         public static int requiredSnapshots = 3;
         public static float sendRate = 1f / pps;
         
-        public static float speed = 3;
-        public static float mouseSensibility = 0.25f;
+        public static float speed = 2;
+        public static float mouseSensibility = 0.1f;
         public static float rotationSpeed = 1.0f;
 
         public static float health_increment_percentage = 0.001f;

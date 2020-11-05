@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -6,6 +7,7 @@ using custom.Network;
 using custom.Utils;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Camera = UnityEngine.Camera;
 using Random = UnityEngine.Random;
 
@@ -325,6 +327,13 @@ namespace custom.Client
             
             
             this.health = auxClient.Health;
+
+            if (this.health < Constants.min_health_alive)
+            {
+                // DIED
+                
+                SceneManager.LoadScene("Menu");
+            }
         }
 
         private static int generate_id()
@@ -343,7 +352,7 @@ namespace custom.Client
             }
             else
             {
-                clientCube = Instantiate(clientCubePrefab3p, new Vector3(0, 0.2f, 0), new Quaternion());
+                clientCube = Instantiate(clientCubePrefab3p, new Vector3(0, 0.05f, 0), new Quaternion());
                 clientCube.name = "soldier " + idJoined;
             }
 
@@ -389,10 +398,17 @@ namespace custom.Client
                 if (cube.Id.Equals(id))
                 {
                     clientCubes.Remove(cube);
-                    Destroy(cube.GameObject);
+                    cube.GameObject.GetComponent<Animator>().SetTrigger("Death");
+                    StartCoroutine(removeObject(cube));
                     return;
                 }
             }
+        }
+
+        private IEnumerator removeObject(CubeEntity cube)
+        {
+            yield return new WaitForSeconds(5.5f);
+            Destroy(cube.GameObject);
         }
     }
 }

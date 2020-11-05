@@ -102,7 +102,7 @@ namespace custom.Server
                 lastSnapshot.Add(id, 0);
                 players.Add(new PlayerInfo(id, endPoint));
                 var serverCube = Instantiate(serverGameObject, 
-                    new Vector3(Random.Range(-20, 20), 0.2f, Random.Range(-20,20)), Quaternion.identity);
+                    new Vector3(Random.Range(-20, 20), 0.5f, Random.Range(-20,20)), Quaternion.identity);
                 // serverCube.layer = 8; // Server Layer
                 SetLayerRecursively(serverCube, 8);
                 CubeEntity newcube = new CubeEntity(serverCube, id);

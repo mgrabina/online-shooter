@@ -364,8 +364,8 @@ namespace custom.Client
             }
             else
             {
-                clientCube.transform.Find("HUD_Life").GetComponent<HealthSignal2>().id = idJoined;
-                clientCube.transform.Find("HUD_Life").GetComponent<HealthSignal2>().cm = this;
+                clientCube.transform.Find("Main Camera").transform.Find("HUD_Life").GetComponent<HealthSignal2>().id = idJoined;
+                clientCube.transform.Find("Main Camera").transform.Find("HUD_Life").GetComponent<HealthSignal2>().cm = this;
 
             }
             clientCubes.Add(newCubeEntity);

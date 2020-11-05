@@ -28,22 +28,22 @@ public class HealthSignal2 : MonoBehaviour
         float lastHealth = cm.getCurrentHealth(id);
         if (lastHealth < 0.2f)
         {
-            mesh.text = "(" + (int)(lastHealth*100) + ")";
+            mesh.text = "[" + (int)(lastHealth*100) + "]";
             mesh.color = Color.black;
         } 
         else if (lastHealth < 0.4f)
         {
-            mesh.text = "* (" + (int)(lastHealth*100) + ") *";
+            mesh.text = "[" + (int)(lastHealth*100) + "]";
             mesh.color = Color.red;
         }
         else if (lastHealth < 0.7f)
         {
-            mesh.text = "* * (" + (int)(lastHealth*100) + ") * *";
+            mesh.text = "[" + (int)(lastHealth*100) + "]";
             mesh.color = Color.yellow;
         }
         else
         {
-            mesh.text = "* * * (" + (int)(lastHealth*100) + ") * * *";
+            mesh.text = "[" + (int)(lastHealth*100) + "";
             mesh.color = Color.green;
         }
     }

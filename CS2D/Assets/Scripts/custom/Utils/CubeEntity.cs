@@ -171,7 +171,6 @@ namespace custom.Utils
             if (this.health+ this.health*Constants.health_increment_percentage <= 1)
             {
                 this.health += this.health * Constants.health_increment_percentage;
-                Debug.Log(id + " " + " new health " + health);
             }
         }
         
@@ -180,7 +179,6 @@ namespace custom.Utils
             if (this.health - this.health*Constants.health_decrement_percentage >= 0)
             {
                 this.health -= this.health*Constants.health_decrement_percentage;
-                Debug.Log(id + " " + " new health " + health);
             }
         }
 

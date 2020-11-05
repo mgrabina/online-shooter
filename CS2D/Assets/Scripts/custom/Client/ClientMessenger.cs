@@ -42,7 +42,6 @@ namespace custom.Client
         {
             Destroy(GameObject.Find("ServerCamera"));
             id = generate_id();
-            Debug.Log("me " + id);
             mb = new MessageBuilder(id, Constants.clients_base_port + id*10, Constants.server_base_port, MasterBehavior.MasterData.ip);
             clientCubes = new List<CubeEntity>();
             if (!registered)

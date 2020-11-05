@@ -85,12 +85,10 @@ namespace custom.Server
                     player.decrementHealth();
                     if (!player.isAlive())
                     {
-                        Debug.Log("Player " + id + "died");
                         Destroy(player.GameObject);
                         serverCubes.Remove(player);
                         players.Remove(new PlayerInfo(id, null));
                     }
-                    Debug.Log(player.Health);
                 }
             }
         }
@@ -159,8 +157,6 @@ namespace custom.Server
             {
                 foreach (var player in players)
                 {
-                    Debug.Log(player.Id);
-                    Debug.Log(lastSnapshot.Keys.ToString());
                     mb.GenerateServerUpdateMessage(player)
                         .setArguments(new Snapshot(lastSnapshot[player.Id]++, serverCubes)).Send();
                     accumulatedTime_c1 -= Constants.sendRate;

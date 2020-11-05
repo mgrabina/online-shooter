@@ -181,7 +181,7 @@ namespace custom.Server
                                        + cube.GameObject.transform.right * commands.x;
                         cube.GameObject.GetComponent<CharacterController>().
                             Move(Constants.speed * Time.deltaTime * move);
-                        cube.GameObject.transform.Rotate(0, commands.mouse_x * Constants.mouseSensibility, 0);
+                        cube.GameObject.transform.rotation = new Quaternion(0, commands.rotation, 0 ,0);
 
                         cube.LastCommandProcessed = commands.number;
                         break;

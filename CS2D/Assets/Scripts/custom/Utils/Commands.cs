@@ -9,18 +9,19 @@ namespace custom.Utils
         public int number;
         public bool space;
         public float x, y;
-        public float mouse_x;
+        public float rotation;
         public float timestamp;
 
+        private float lastRotation = 0f;
 
-        public Commands(int number, float x, float y, bool space, float timestamp, float mouseX)
+        public Commands(int number, float x, float y, bool space, float timestamp, float rotation)
         {
             this.number = number;
             this.x = x;
             this.y = y;
             this.space = space;
             this.timestamp = timestamp;
-            this.mouse_x = mouseX;
+            this.rotation = rotation;
         }
 
         public Commands()
@@ -33,7 +34,7 @@ namespace custom.Utils
             buffer.PutInt(number);
             buffer.PutFloat(x);
             buffer.PutFloat(y);
-            buffer.PutFloat(mouse_x);
+            buffer.PutFloat(rotation);
             buffer.PutBit(space);
             
         }
@@ -43,7 +44,7 @@ namespace custom.Utils
             number = buffer.GetInt();
             x = buffer.GetFloat();
             y = buffer.GetFloat();
-            mouse_x = buffer.GetFloat();
+            rotation = buffer.GetFloat();
             space = buffer.GetBit();
         }
 
@@ -60,7 +61,9 @@ namespace custom.Utils
 
         public bool notNull()
         {
-            return x != 0f || y != 0f || mouse_x != 0f || space;
+            bool changed_rotation = rotation.Equals(lastRotation);
+            lastRotation = rotation;
+            return x != 0f || y != 0f || changed_rotation || space;
         }
     }
 }

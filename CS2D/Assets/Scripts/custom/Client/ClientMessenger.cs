@@ -256,7 +256,7 @@ namespace custom.Client
                 Input.GetAxis("Vertical"),
                 Input.GetKeyDown(KeyCode.Space), 
                 timeout,                
-                Input.GetAxis("Mouse X")
+                 this.myCharacterController.gameObject.transform.rotation.y
             );
 
             if (command.notNull())

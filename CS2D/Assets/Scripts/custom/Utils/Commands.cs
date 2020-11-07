@@ -11,9 +11,7 @@ namespace custom.Utils
         public float x, y;
         public float rotation;
         public float timestamp;
-
-        private float lastRotation = 0f;
-
+        
         public Commands(int number, float x, float y, bool space, float timestamp, float rotation)
         {
             this.number = number;
@@ -61,9 +59,7 @@ namespace custom.Utils
 
         public bool notNull()
         {
-            bool changed_rotation = rotation.Equals(lastRotation);
-            lastRotation = rotation;
-            return x != 0f || y != 0f || changed_rotation || space;
+            return x != 0f || y != 0f || space;
         }
     }
 }

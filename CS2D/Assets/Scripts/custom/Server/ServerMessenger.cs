@@ -13,13 +13,13 @@ namespace custom.Server
     {
         private HashSet<PlayerInfo> players = new HashSet<PlayerInfo>();
         private List<CubeEntity> serverCubes;
-        
+        private Dictionary<int, int> kills;
         
         private float accumulatedTime_c1 = 0f;
         private int packetNumber = 0;
 
         private bool online = false;
-        
+
         private MessageBuilder mb;
         public GameObject serverGameObject;
 
@@ -31,6 +31,7 @@ namespace custom.Server
             online = true;
             serverCubes = new List<CubeEntity>();
             lastSnapshot = new Dictionary<int, int>();
+            kills = new Dictionary<int, int>();
         }
 
         private void Update()
@@ -77,17 +78,20 @@ namespace custom.Server
 
         private void newHittedPlayer(HitEnemyMessage message)
         {
-            int id = message.GetId;
+            int fromId = message.FromId;
+            int toId = message.ToId;
             foreach (CubeEntity player in serverCubes)
             {
-                if (player.Id.Equals(id))
+                if (player.Id.Equals(toId))
                 {
                     player.decrementHealth();
                     if (!player.isAlive())
                     {
+                        registerKill(fromId);
+                        
                         Destroy(player.GameObject);
                         serverCubes.Remove(player);
-                        players.Remove(new PlayerInfo(id, null));
+                        players.Remove(new PlayerInfo(toId, null));
                     }
                 }
             }
@@ -100,6 +104,7 @@ namespace custom.Server
             if (!players.Contains(new PlayerInfo(id, endPoint)))
             {
                 lastSnapshot.Add(id, 0);
+                kills.Add(id, 0);
                 players.Add(new PlayerInfo(id, endPoint));
                 var serverCube = Instantiate(serverGameObject, 
                     new Vector3(Random.Range(-20, 20), 0.5f, Random.Range(-20,20)), Quaternion.identity);
@@ -174,17 +179,15 @@ namespace custom.Server
                 {
                     if (cube.Id.Equals(message.GetId))
                     {
-                        // cube.GameObject.GetComponent<CharacterController>().transform.Translate(
-                        //     Commands.generateStraffe(commands), 0, Commands.generateTranslation(commands));
-                        Debug.Log(commands.rotation);
-                        Debug.Log(commands.y);
+                        while (Math.Abs(commands.rotation - cube.GameObject.transform.rotation.y) > 0.0001f)
+                        {
+                            cube.GameObject.GetComponent<CharacterController>().transform.Rotate(0, commands.rotation - cube.GameObject.transform.rotation.y, 0); 
+                        }
 
                         Vector3 move = cube.GameObject.transform.forward * commands.y 
                                        + cube.GameObject.transform.right * commands.x;
                         cube.GameObject.GetComponent<CharacterController>().
                             Move(Constants.speed * Time.deltaTime * move);
-                        cube.GameObject.GetComponent<CharacterController>().transform
-                            .rotation.Set(0, commands.rotation, 0 ,0);
 
                         cube.LastCommandProcessed = commands.number;
                         break;
@@ -223,6 +226,15 @@ namespace custom.Server
             return null;
         }
 
+        public void registerKill(int id)
+        {
+            kills[id] = kills[id] + 1;
+            foreach (CubeEntity player in serverCubes)
+            {
+                player.incrementKills();
+            }
+        }
+        
         public void regenerateHealth()
         {
             foreach (CubeEntity player in serverCubes)
@@ -242,6 +254,11 @@ namespace custom.Server
             }
 
             return -1f;
+        }
+        
+        public int getKills()
+        {
+            return -1;
         }
     }
 }

@@ -10,7 +10,6 @@ using UnityEngine.SceneManagement;
 public class HealthSignal2 : MonoBehaviour
 {
     private TextMesh mesh;
-    public Material black, red, yellow, green;
     public Messenger cm;
     public int id;
     

@@ -37,7 +37,11 @@ namespace custom.Client
         private GameObject concilliateGO;
         public GameObject concilliatePrefab;
         public int requiredSnapshots = 3;
+        private int kills;
 
+        private float mintime_between_inputs = 0.01f;
+        private float current_time_between_inputs = 1f;
+        
         private void Start()
         {
             Destroy(GameObject.Find("ServerCamera"));
@@ -81,6 +85,7 @@ namespace custom.Client
         private void FixedUpdate()
         {
             accumulatedTime_c2 += Time.deltaTime;
+            current_time_between_inputs += Time.deltaTime;
 
             if (clientResponding)
             {
@@ -134,7 +139,6 @@ namespace custom.Client
             
             Snapshot.setUniqueSnapshot(snapshot).applyChanges(id);
             setCurrentHealths(snapshot, clientCubes);
-
         }
         
         private void processPlayerJoined(PlayerJoinedMessage message)
@@ -261,6 +265,7 @@ namespace custom.Client
 
             if (command.notNull())
             {
+                current_time_between_inputs = 0f;
                 commands.Add(command);
                 packetNumber++;
             }
@@ -278,9 +283,6 @@ namespace custom.Client
                                    + myCharacterController.gameObject.transform.right * commands.x;
                     myCharacterController.
                         Move(Constants.speed * Time.deltaTime * move);
-                    // myCharacterController.gameObject.transform.Rotate(0, commands.mouse_x * Constants.mouseSensibility, 0);
-            
-                    // myCharacterController.transform.Find("Main Camera").transform.rotation = myCharacterController.transform.rotation;
                 }
             }
         }
@@ -294,8 +296,8 @@ namespace custom.Client
             {
                 if (hit.transform.name.Contains("soldier"))
                 {
-                    int id = int.Parse(hit.transform.name.Split(' ')[1]);
-                    mb.GenerateHitEnemyMessage(id).Send();
+                    int toId = int.Parse(hit.transform.name.Split(' ')[1]);
+                    mb.GenerateHitEnemyMessage(this.id, toId).Send();
                 }
             }
         }
@@ -315,17 +317,15 @@ namespace custom.Client
 
                     Vector3 move = concilliateGO.transform.forward * auxCommand.y + concilliateGO.transform.right * auxCommand.x;
                     concilliateGO.GetComponent<CharacterController>().Move(Constants.speed * Time.deltaTime * move);
-                    // concilliateGO.transform.Rotate(0, auxCommand.mouse_x * Constants.mouseSensibility, 0);
                 }
 
             }
 
             myCharacterController.gameObject.transform.position = concilliateGO.transform.position;
-
-            // myCharacterController.gameObject.transform.rotation = concilliateGO.transform.rotation;
             
             
             this.health = auxClient.Health;
+            this.kills = auxClient.kills;
 
             if (this.health < Constants.min_health_alive)
             {
@@ -366,6 +366,8 @@ namespace custom.Client
             {
                 clientCube.transform.Find("Main Camera").transform.Find("HUD_Life").GetComponent<HealthSignal2>().id = idJoined;
                 clientCube.transform.Find("Main Camera").transform.Find("HUD_Life").GetComponent<HealthSignal2>().cm = this;
+                clientCube.transform.Find("Main Camera").transform.Find("Kills").GetComponent<Kills>().id = idJoined;
+                clientCube.transform.Find("Main Camera").transform.Find("Kills").GetComponent<Kills>().cm = this;
 
             }
             clientCubes.Add(newCubeEntity);
@@ -393,6 +395,11 @@ namespace custom.Client
             }
 
             return -1f;
+        }
+        
+        public int getKills()
+        {
+            return this.kills;
         }
 
         public void deletePlayer(int id)

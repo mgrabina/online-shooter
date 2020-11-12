@@ -195,9 +195,6 @@ namespace custom.Server
                 {
                     if (cube.Id.Equals(message.GetId))
                     {
-                        Debug.Log(commands.rotation);
-                        Debug.Log(cube.GameObject.transform.rotation.y);
-                        Debug.Log(commands.rotation - cube.GameObject.transform.rotation.y);
                         while (Math.Abs(commands.rotation - cube.GameObject.transform.rotation.y) > 0.0001f) // TODO Improve efficiency
                         {
                             float change = 0f;
@@ -219,7 +216,7 @@ namespace custom.Server
                             
                             cube.GameObject.GetComponent<CharacterController>().transform.Rotate(0, change, 0); 
                         }
-
+                        cube.GameObject.GetComponent<CharacterController>().transform.rotation.Set(0, commands.rotation, 0, 0);
                         Vector3 move = cube.GameObject.transform.forward * commands.y 
                                        + cube.GameObject.transform.right * commands.x;
                         cube.GameObject.GetComponent<CharacterController>().

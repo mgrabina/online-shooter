@@ -74,6 +74,7 @@ namespace custom.Network
                 case Type.HIT_ENEMY_MESSAGE: return new HitEnemyMessage(type, id, incomePacket);
                 case Type.GAME_STATE_UPDATE: return new ServerUpdateMessage(type, id, incomePacket);
                 case Type.CLIENT_UPDATE_ACK: return new ServerACKMessage(type, id, incomePacket);
+                case Type.GOODBYE: return new GoodbyeMessage(type, id, incomePacket);
             }
             return null;
         }
@@ -92,6 +93,7 @@ namespace custom.Network
 
             DISCONNECT_REQUEST,
             PLAYER_DISCONNECTED,
+            GOODBYE,
             
             NULL
         }
@@ -109,7 +111,9 @@ namespace custom.Network
             Type.HIT_ENEMY_MESSAGE,
 
             Type.DISCONNECT_REQUEST,
-            Type.PLAYER_DISCONNECTED
+            Type.PLAYER_DISCONNECTED,
+            
+            Type.GOODBYE
         };
 
         public new Type GetType => type;

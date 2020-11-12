@@ -74,8 +74,10 @@ namespace custom.Client
                     Shoot();
                 }
                 updateServerVisualization();
+
+                int safe_check_limit = 10, currentIter = 0;
                 
-                while (interpolationBuffer.Count >= requiredSnapshots) {
+                while (interpolationBuffer.Count >= requiredSnapshots && currentIter++ < safe_check_limit) {
                     Interpolate();
                     Concilliate();
                 }
@@ -121,6 +123,9 @@ namespace custom.Client
                             return;
                         }
                         processServerACK((ServerACKMessage) message); break;
+                    case Message.Type.GOODBYE: 
+                        Application.Quit(); //Server shut down
+                        break;
                 }
             }
         }
@@ -379,7 +384,9 @@ namespace custom.Client
             return playerIds.Contains(id);
         }
         
-        public void OnDestroy() {
+        public void OnDestroy()
+        {
+            mb.GenerateGoodbye(id).Send();
             mb.Disconnect();
         }
 

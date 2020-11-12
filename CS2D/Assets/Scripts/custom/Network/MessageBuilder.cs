@@ -29,6 +29,11 @@ namespace custom.Network
         {
             return new JoinGameMessage(id, _channel, _destinationIP, _channelPortD);
         }
+        
+        public GoodbyeMessage GenerateGoodbye(int id)
+        {
+            return new GoodbyeMessage(id, _channel, _destinationIP, _channelPortD);
+        }
 
         public ClientUpdateMessage GenerateClientUpdateMessage()
         {
@@ -44,6 +49,11 @@ namespace custom.Network
         public PlayerJoinedMessage GeneratePlayerJoinedMessage(PlayerInfo player)
         {
             return new PlayerJoinedMessage(-1, _channel, player.EndPoint.Address.ToString(), Constants.clients_base_port + 10*player.Id);
+        }
+        
+        public GoodbyeMessage GenerateGoodbye(PlayerInfo player)
+        {
+            return new GoodbyeMessage(-1, _channel, player.EndPoint.Address.ToString(), Constants.clients_base_port + 10*player.Id);
         }
 
         public ServerUpdateMessage GenerateServerUpdateMessage(PlayerInfo player)

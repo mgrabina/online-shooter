@@ -72,6 +72,7 @@ namespace custom.Server
                     case Message.Type.HIT_ENEMY_MESSAGE: newHittedPlayer((HitEnemyMessage) message); break;
                     case Message.Type.JOIN_GAME: processJoinGame((JoinGameMessage) message); break;
                     case Message.Type.CLIENT_UPDATE: processClientInput((ClientUpdateMessage) message); break;
+                    case Message.Type.GOODBYE: processGoodbye((GoodbyeMessage) message); break;
                 }
             }
         }
@@ -95,6 +96,21 @@ namespace custom.Server
                     }
                 }
             }
+        }
+
+        public void processGoodbye(GoodbyeMessage message)
+        {
+            int id = message.GetId;
+
+            foreach (CubeEntity player in serverCubes)
+            {
+                if (player.Id.Equals(id))
+                {
+                    Destroy(player.GameObject);
+                    serverCubes.Remove(player);
+                    players.Remove(new PlayerInfo(id, null));
+                }
+            } 
         }
         
         public void processJoinGame(JoinGameMessage message)
@@ -181,6 +197,9 @@ namespace custom.Server
                     {
                         while (Math.Abs(commands.rotation - cube.GameObject.transform.rotation.y) > 0.0001f)
                         {
+                            Debug.Log(commands.rotation);
+                            Debug.Log(cube.GameObject.transform.rotation.y);
+                            Debug.Log(commands.rotation - cube.GameObject.transform.rotation.y);
                             cube.GameObject.GetComponent<CharacterController>().transform.Rotate(0, commands.rotation - cube.GameObject.transform.rotation.y, 0); 
                         }
 
@@ -211,6 +230,10 @@ namespace custom.Server
         }
     
         public void OnDestroy() {
+            foreach (var player in players)
+            {
+                mb.GenerateGoodbye(player).Send();
+            }
             mb.Disconnect();
         }
 

@@ -195,11 +195,11 @@ namespace custom.Server
                 {
                     if (cube.Id.Equals(message.GetId))
                     {
+                        Debug.Log(commands.rotation);
+                        Debug.Log(cube.GameObject.transform.rotation.y);
+                        Debug.Log(commands.rotation - cube.GameObject.transform.rotation.y);
                         while (Math.Abs(commands.rotation - cube.GameObject.transform.rotation.y) > 0.0001f)
                         {
-                            Debug.Log(commands.rotation);
-                            Debug.Log(cube.GameObject.transform.rotation.y);
-                            Debug.Log(commands.rotation - cube.GameObject.transform.rotation.y);
                             cube.GameObject.GetComponent<CharacterController>().transform.Rotate(0, commands.rotation - cube.GameObject.transform.rotation.y, 0); 
                         }
 

@@ -28,6 +28,8 @@ namespace custom.Client
         private List<Snapshot> interpolationBuffer = new List<Snapshot>();
         private MessageBuilder mb;
 
+        private float latency = 0f;
+        
         // State Params
         public int id;
         private bool clientResponding = false, registered = false, connected = true, initialized = false;
@@ -200,7 +202,7 @@ namespace custom.Client
         {
             if (accumulatedTime_c2 >= Constants.sendRate)
             {
-                mb.GenerateClientUpdateMessage().setArguments(commands).Send();
+                StartCoroutine(sendMessage(mb.GenerateClientUpdateMessage().setArguments(commands)));
                 accumulatedTime_c2 -= Constants.sendRate;
             }
         }
@@ -305,7 +307,7 @@ namespace custom.Client
                 if (hit.transform.name.Contains("soldier"))
                 {
                     int toId = int.Parse(hit.transform.name.Split(' ')[1]);
-                    mb.GenerateHitEnemyMessage(this.id, toId).Send();
+                    StartCoroutine(sendMessage(mb.GenerateHitEnemyMessage(this.id, toId)));
                 }
             }
         }
@@ -431,6 +433,12 @@ namespace custom.Client
         {
             yield return new WaitForSeconds(5f);
             Destroy(cube.GameObject);
+        }
+
+        private IEnumerator sendMessage(Message message)
+        {
+            yield return new WaitForSeconds(latency);
+            message.Send();
         }
     }
 }

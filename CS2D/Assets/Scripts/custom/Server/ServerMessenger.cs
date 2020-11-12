@@ -202,16 +202,19 @@ namespace custom.Server
                                 (commands.rotation < 0 && cube.GameObject.transform.rotation.y < 0))
                             {
                                 change = commands.rotation - cube.GameObject.transform.rotation.y;
-                            } else if ((commands.rotation < 0 && cube.GameObject.transform.rotation.y > 0))
-                            {
-                                change = -commands.rotation - cube.GameObject.transform.rotation.y;
-                            } else if ((commands.rotation > 0 && cube.GameObject.transform.rotation.y < 0))
-                            {
-                                change = commands.rotation + cube.GameObject.transform.rotation.y;
-                            }
+                            } 
                             else
                             {
-                                change = commands.rotation - cube.GameObject.transform.rotation.y;
+                                float first = 0f, second = 0f;
+                                if (commands.rotation > 0) first = 1f - commands.rotation;
+                                else first = 1f + commands.rotation;
+                                if (cube.GameObject.transform.rotation.y > 0) second = 1f - cube.GameObject.transform.rotation.y;
+                                else second = 1f + cube.GameObject.transform.rotation.y;
+                                change = first + second;
+                                if (commands.rotation > 0)
+                                {
+                                    change = -change;
+                                }
                             }
                             
                             cube.GameObject.GetComponent<CharacterController>().transform.Rotate(0, change, 0); 

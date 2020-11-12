@@ -195,7 +195,7 @@ namespace custom.Server
                 {
                     if (cube.Id.Equals(message.GetId))
                     {
-                        cube.GameObject.transform.rotation = new Quaternion(0,commands.rotation, 0, 0);
+                        cube.GameObject.transform.rotation = Quaternion.Euler(commands.rotation_x, commands.rotation_y,commands.rotation_z);
                         Vector3 move = cube.GameObject.transform.forward * commands.y 
                                        + cube.GameObject.transform.right * commands.x;
                         cube.GameObject.GetComponent<CharacterController>().

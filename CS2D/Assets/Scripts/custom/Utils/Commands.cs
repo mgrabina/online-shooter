@@ -9,17 +9,21 @@ namespace custom.Utils
         public int number;
         public bool space;
         public float x, y;
-        public float rotation;
+        public float rotation_x;
+        public float rotation_y;
+        public float rotation_z;
         public float timestamp;
         
-        public Commands(int number, float x, float y, bool space, float timestamp, float rotation)
+        public Commands(int number, float x, float y, bool space, float timestamp, float rotation_x, float rotation_y, float rotation_z)
         {
             this.number = number;
             this.x = x;
             this.y = y;
             this.space = space;
             this.timestamp = timestamp;
-            this.rotation = rotation;
+            this.rotation_x = rotation_x;
+            this.rotation_y = rotation_y;
+            this.rotation_z = rotation_z;
         }
 
         public Commands()
@@ -32,7 +36,9 @@ namespace custom.Utils
             buffer.PutInt(number);
             buffer.PutFloat(x);
             buffer.PutFloat(y);
-            buffer.PutFloat(rotation);
+            buffer.PutFloat(rotation_x);
+            buffer.PutFloat(rotation_y);
+            buffer.PutFloat(rotation_z);
             buffer.PutBit(space);
             
         }
@@ -42,7 +48,9 @@ namespace custom.Utils
             number = buffer.GetInt();
             x = buffer.GetFloat();
             y = buffer.GetFloat();
-            rotation = buffer.GetFloat();
+            rotation_x = buffer.GetFloat();
+            rotation_y = buffer.GetFloat();
+            rotation_z = buffer.GetFloat();
             space = buffer.GetBit();
         }
 

@@ -260,12 +260,15 @@ namespace custom.Client
         private void ReadInput()
         {
             var timeout = Time.time + 2;
+            var rotation = this.myCharacterController.gameObject.transform.rotation;
             var command = new Commands(packetNumber + 1,
                 Input.GetAxis("Horizontal"),
                 Input.GetAxis("Vertical"),
                 Input.GetKeyDown(KeyCode.Space), 
                 timeout,                
-                 this.myCharacterController.gameObject.transform.rotation.y
+                 rotation.eulerAngles.x,
+                 rotation.eulerAngles.y,
+                 rotation.eulerAngles.z
             );
 
             if (command.notNull())

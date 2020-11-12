@@ -198,9 +198,26 @@ namespace custom.Server
                         Debug.Log(commands.rotation);
                         Debug.Log(cube.GameObject.transform.rotation.y);
                         Debug.Log(commands.rotation - cube.GameObject.transform.rotation.y);
-                        while (Math.Abs(commands.rotation - cube.GameObject.transform.rotation.y) > 0.0001f)
+                        while (Math.Abs(commands.rotation - cube.GameObject.transform.rotation.y) > 0.0001f) // TODO Improve efficiency
                         {
-                            cube.GameObject.GetComponent<CharacterController>().transform.Rotate(0, commands.rotation - cube.GameObject.transform.rotation.y, 0); 
+                            float change = 0f;
+                            if ((commands.rotation > 0 && cube.GameObject.transform.rotation.y > 0) || 
+                                (commands.rotation < 0 && cube.GameObject.transform.rotation.y < 0))
+                            {
+                                change = commands.rotation - cube.GameObject.transform.rotation.y;
+                            } else if ((commands.rotation < 0 && cube.GameObject.transform.rotation.y > 0))
+                            {
+                                change = -commands.rotation - cube.GameObject.transform.rotation.y;
+                            } else if ((commands.rotation > 0 && cube.GameObject.transform.rotation.y < 0))
+                            {
+                                change = commands.rotation + cube.GameObject.transform.rotation.y;
+                            }
+                            else
+                            {
+                                change = commands.rotation - cube.GameObject.transform.rotation.y;
+                            }
+                            
+                            cube.GameObject.GetComponent<CharacterController>().transform.Rotate(0, change, 0); 
                         }
 
                         Vector3 move = cube.GameObject.transform.forward * commands.y 

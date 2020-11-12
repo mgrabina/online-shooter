@@ -195,31 +195,7 @@ namespace custom.Server
                 {
                     if (cube.Id.Equals(message.GetId))
                     {
-                        while (Math.Abs(commands.rotation - cube.GameObject.transform.rotation.y) > 0.0001f) // TODO Improve efficiency
-                        {
-                            float change = 0f;
-                            if ((commands.rotation > 0 && cube.GameObject.transform.rotation.y > 0) || 
-                                (commands.rotation < 0 && cube.GameObject.transform.rotation.y < 0))
-                            {
-                                change = commands.rotation - cube.GameObject.transform.rotation.y;
-                            } 
-                            else
-                            {
-                                float first = 0f, second = 0f;
-                                if (commands.rotation > 0) first = 1f - commands.rotation;
-                                else first = 1f + commands.rotation;
-                                if (cube.GameObject.transform.rotation.y > 0) second = 1f - cube.GameObject.transform.rotation.y;
-                                else second = 1f + cube.GameObject.transform.rotation.y;
-                                change = first + second;
-                                if (commands.rotation > 0)
-                                {
-                                    change = -change;
-                                }
-                            }
-                            
-                            cube.GameObject.GetComponent<CharacterController>().transform.Rotate(0, change, 0); 
-                        }
-                        cube.GameObject.GetComponent<CharacterController>().transform.rotation.Set(0, commands.rotation, 0, 0);
+                        cube.GameObject.transform.rotation = new Quaternion(0,commands.rotation, 0, 0);
                         Vector3 move = cube.GameObject.transform.forward * commands.y 
                                        + cube.GameObject.transform.right * commands.x;
                         cube.GameObject.GetComponent<CharacterController>().

@@ -4,5 +4,6 @@ namespace custom
     {
         int getKills();
         float getCurrentHealth(int id);
+        float getLatency();
     }
 }

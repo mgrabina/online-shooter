@@ -28,7 +28,7 @@ namespace custom.Client
         private List<Snapshot> interpolationBuffer = new List<Snapshot>();
         private MessageBuilder mb;
 
-        private float latency = 0f;
+        public float latency = 0f;
         
         // State Params
         public int id;
@@ -67,6 +67,26 @@ namespace custom.Client
             if (Input.GetKeyDown(KeyCode.M))
             {
                 connected = !connected;
+            }
+            
+            if (Input.GetKeyDown(KeyCode.Keypad5))
+            {
+                latency = 0.0f;
+            } else if (Input.GetKeyDown(KeyCode.Keypad6))
+            {
+                latency = 0.1f;
+            } else if (Input.GetKeyDown(KeyCode.Keypad7))
+            {
+                latency = 0.2f;
+            } else if (Input.GetKeyDown(KeyCode.Keypad8))
+            {
+                latency = 0.3f;
+            } else if (Input.GetKeyDown(KeyCode.Keypad9))
+            {
+                latency = 0.4f;
+            } else if (Input.GetKeyDown(KeyCode.Keypad0))
+            {
+                latency = 0.5f;
             }
             
             if (registered && connected)
@@ -378,6 +398,7 @@ namespace custom.Client
                 clientCube.transform.Find("Main Camera").transform.Find("HUD_Life").GetComponent<HealthSignal2>().cm = this;
                 clientCube.transform.Find("Main Camera").transform.Find("Kills").GetComponent<Kills>().id = idJoined;
                 clientCube.transform.Find("Main Camera").transform.Find("Kills").GetComponent<Kills>().cm = this;
+                clientCube.transform.Find("Main Camera").transform.Find("Latency").GetComponent<Latency>().cm = this;
 
             }
             clientCubes.Add(newCubeEntity);
@@ -439,6 +460,11 @@ namespace custom.Client
         {
             yield return new WaitForSeconds(latency);
             message.Send();
+        }
+
+        public float getLatency()
+        {
+            return latency;
         }
     }
 }

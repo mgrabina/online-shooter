@@ -276,5 +276,10 @@ namespace custom.Server
         {
             return -1;
         }
+
+        public float getLatency()
+        {
+            return 0f;
+        }
     }
 }

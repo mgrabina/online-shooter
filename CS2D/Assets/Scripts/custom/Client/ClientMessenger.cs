@@ -68,27 +68,7 @@ namespace custom.Client
             {
                 connected = !connected;
             }
-            
-            if (Input.GetKeyDown(KeyCode.Keypad5))
-            {
-                latency = 0.0f;
-            } else if (Input.GetKeyDown(KeyCode.Keypad6))
-            {
-                latency = 0.1f;
-            } else if (Input.GetKeyDown(KeyCode.Keypad7))
-            {
-                latency = 0.2f;
-            } else if (Input.GetKeyDown(KeyCode.Keypad8))
-            {
-                latency = 0.3f;
-            } else if (Input.GetKeyDown(KeyCode.Keypad9))
-            {
-                latency = 0.4f;
-            } else if (Input.GetKeyDown(KeyCode.Keypad0))
-            {
-                latency = 0.5f;
-            }
-            
+
             if (registered && connected)
             {
                 if (Input.GetMouseButtonDown(0))
@@ -108,6 +88,32 @@ namespace custom.Client
 
         private void FixedUpdate()
         {
+            if (Input.GetKeyDown(KeyCode.Alpha5))
+            {
+                latency = 0.0f;
+                Debug.Log(latency);
+            } else if (Input.GetKeyDown(KeyCode.Alpha6))
+            {
+                latency = 0.1f;
+                Debug.Log(latency);
+            } else if (Input.GetKeyDown(KeyCode.Alpha7))
+            {
+                latency = 0.2f;
+                Debug.Log(latency);
+            } else if (Input.GetKeyDown(KeyCode.Alpha8))
+            {
+                latency = 0.3f;
+                Debug.Log(latency);
+            } else if (Input.GetKeyDown(KeyCode.Alpha9))
+            {
+                latency = 0.4f;
+                Debug.Log(latency);
+            } else if (Input.GetKeyDown(KeyCode.Alpha0))
+            {
+                latency = 0.5f;
+                Debug.Log(latency);
+            }
+            
             accumulatedTime_c2 += Time.deltaTime;
             current_time_between_inputs += Time.deltaTime;
 

@@ -91,27 +91,21 @@ namespace custom.Client
             if (Input.GetKeyDown(KeyCode.Alpha5))
             {
                 latency = 0.0f;
-                Debug.Log(latency);
             } else if (Input.GetKeyDown(KeyCode.Alpha6))
             {
                 latency = 0.1f;
-                Debug.Log(latency);
             } else if (Input.GetKeyDown(KeyCode.Alpha7))
             {
                 latency = 0.2f;
-                Debug.Log(latency);
             } else if (Input.GetKeyDown(KeyCode.Alpha8))
             {
                 latency = 0.3f;
-                Debug.Log(latency);
             } else if (Input.GetKeyDown(KeyCode.Alpha9))
             {
                 latency = 0.4f;
-                Debug.Log(latency);
             } else if (Input.GetKeyDown(KeyCode.Alpha0))
             {
                 latency = 0.5f;
-                Debug.Log(latency);
             }
             
             accumulatedTime_c2 += Time.deltaTime;
@@ -152,7 +146,7 @@ namespace custom.Client
                         }
                         processServerACK((ServerACKMessage) message); break;
                     case Message.Type.GOODBYE: 
-                        Application.Quit(); //Server shut down
+                        SceneManager.LoadScene("Menu");
                         break;
                 }
             }
@@ -425,6 +419,11 @@ namespace custom.Client
 
         public float getCurrentHealth(int id)
         {
+            if (id.Equals(this.id))
+            {
+                return this.health;
+            }
+            
             foreach (var cube in clientCubes)
             {
                 if (cube.Id.Equals(id))

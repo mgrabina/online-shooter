@@ -89,6 +89,15 @@ namespace custom.Server
                     if (!player.isAlive())
                     {
                         registerKill(fromId);
+
+                        foreach (var p in players)
+                        {
+                            if (p.Id.Equals(player.Id))
+                            {
+                                mb.GenerateGoodbye(p).Send();
+                                break;
+                            }   
+                        }
                         
                         Destroy(player.GameObject);
                         serverCubes.Remove(player);

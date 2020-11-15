@@ -353,8 +353,9 @@ namespace custom.Client
 
             myCharacterController.gameObject.transform.position = concilliateGO.transform.position;
             
+            Debug.Log(auxClient.Health);
             
-            this.health = auxClient.Health;
+            this.health = auxClient.aux_health;
             this.kills = auxClient.kills;
 
             if (this.health < Constants.min_health_alive)

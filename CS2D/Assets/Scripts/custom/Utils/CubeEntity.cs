@@ -12,7 +12,7 @@ namespace custom.Utils
         private int id = -1;
         public int kills;
         private float health;
-        private float aux_health;
+        public float aux_health;
         private int aux_kills;
         Vector3 aux_position = new Vector3();
         Quaternion aux_rotation = new Quaternion();
